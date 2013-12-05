@@ -2,7 +2,7 @@
   <id>org.github.erikzielke.gotoproject</id>
   <name>Go To Project</name>
   <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <vendor email="erikzielke@hotmail.com" >Erik Zielke</vendor>
 
   <description><![CDATA[
       Enables opening project windows with speed search
