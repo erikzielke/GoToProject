@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>org.github.erikzielke.gotoproject</id>
   <name>Go To Project</name>
-  <version>1.0</version>
+  <version>1.1</version>
   <vendor email="erikzielke@hotmail.com" >Erik Zielke</vendor>
 
   <description><![CDATA[
