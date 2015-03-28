@@ -1,5 +1,6 @@
 package org.github.erikzielke.gotoproject;
 
+import com.intellij.ide.RecentProjectsManager;
 import com.intellij.ide.RecentProjectsManagerBase;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
@@ -54,7 +55,8 @@ public class GoToProject extends AnAction {
         GoToProjectWindowSettings state = instance.getState();
         if (instance != null && state != null && state.isIncludeRecent()) {
             actionGroup.addSeparator("Recent Projects");
-            final AnAction[] recentProjectActions = RecentProjectsManagerBase.getInstance().getRecentProjectsActions(false);
+            RecentProjectsManager projectsManager = RecentProjectsManager.getInstance();
+            final AnAction[] recentProjectActions = projectsManager.getRecentProjectsActions(false);
             ArrayList<AnAction> list = new ArrayList<AnAction>(Arrays.asList(recentProjectActions));
             for (AnAction action : list) {
                 actionGroup.add(action);
