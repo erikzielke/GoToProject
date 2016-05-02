@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>org.github.erikzielke.gotoproject</id>
   <name>Go To Project</name>
-  <version>1.1.3</version>
+  <version>1.1.4</version>
   <vendor email="erikzielke@hotmail.com" >Erik Zielke</vendor>
 
   <description><![CDATA[
@@ -36,6 +36,7 @@
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
+    <applicationConfigurable instance="org.github.erikzielke.gotoproject.GotoProjectApplicationConfigurable" />
     <!-- Add your extensions here -->
   </extensions>
 </idea-plugin>
