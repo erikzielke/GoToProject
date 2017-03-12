@@ -39,6 +39,8 @@ public class GoToProjectProjectComponent extends AbstractProjectComponent {
     @Override
     public void projectClosed() {
         JFrame projectFrame = WindowManager.getInstance().getFrame(myProject);
-        projectFrame.removeWindowFocusListener(projectFocusListener);
+        if(projectFrame != null) {
+            projectFrame.removeWindowFocusListener(projectFocusListener);
+        }
     }
 }
