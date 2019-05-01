@@ -1,7 +1,6 @@
 package org.github.erikzielke.gotoproject;
 
 import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,14 +9,14 @@ import javax.swing.*;
 /**
  * Created by ez on 02/05/16.
  */
-public class GotoProjectApplicationConfigurable  implements Configurable {
-    private GotToProjectWindowSettingsForm settingsForm;
+public class GotoProjectApplicationConfigurable implements Configurable {
 
+    private GotToProjectWindowSettingsForm settingsForm;
 
     @Nls
     @Override
     public String getDisplayName() {
-        return "Go To Project Window";
+        return "Go To Project";
     }
 
     @Nullable
@@ -38,16 +37,17 @@ public class GotoProjectApplicationConfigurable  implements Configurable {
 
     @Override
     public boolean isModified() {
-        GoToProjectWindowSettings state = GoToProjectApplicationComponent.getInstance().getState();
-        return  settingsForm.isModified(state);
+        GoToProjectWindowSettings state = GoToProjectApplicationComponent.getInstance()
+                                                                         .getState();
+        return settingsForm.isModified(state);
     }
 
 
     @Override
-    public void apply() throws ConfigurationException {
+    public void apply() {
         if (settingsForm != null) {
-            GoToProjectWindowSettings state = GoToProjectApplicationComponent.getInstance().getState();
-
+            GoToProjectWindowSettings state = GoToProjectApplicationComponent.getInstance()
+                                                                             .getState();
             settingsForm.getData(state);
         }
     }
@@ -56,7 +56,6 @@ public class GotoProjectApplicationConfigurable  implements Configurable {
     public void reset() {
         if (settingsForm != null) {
             GoToProjectWindowSettings state = GoToProjectApplicationComponent.getInstance().getState();
-
             settingsForm.setData(state);
         }
     }
@@ -65,7 +64,6 @@ public class GotoProjectApplicationConfigurable  implements Configurable {
     public void disposeUIResources() {
         settingsForm = null;
     }
-
 
 
 }
