@@ -1,0 +1,32 @@
+<idea-plugin>
+    <id>org.github.erikzielke.gotoproject</id>
+    <name>Go To Project</name>
+    <version>1.1.4</version>
+    <vendor email="erikzielke@hotmail.com" >Erik Zielke</vendor>
+
+    <description><![CDATA[
+      Enables opening project windows with speed search
+      ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <actions>
+        <!-- Add your actions here -->
+        <action id="GoToProject" class="org.github.erikzielke.gotoproject.GoToProject" text="Go To Project Window">
+            <add-to-group group-id="OpenProjectWindows" anchor="last"/>
+        </action>
+        <action id="GoToLastProject" class="org.github.erikzielke.gotoproject.GoToLastProject" text="Go To Last Project Window">
+            <add-to-group group-id="OpenProjectWindows" anchor="last"/>
+        </action>
+    </actions>
+
+    <applicationListeners>
+        <listener class="org.github.erikzielke.gotoproject.focus.GoToProjectProjectManagerListener" topic="com.intellij.openapi.project.ProjectManagerListener" />
+    </applicationListeners>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable instance="org.github.erikzielke.gotoproject.GotoProjectApplicationConfigurable" />
+
+        <!-- Add your extensions here -->
+    </extensions>
+</idea-plugin>
