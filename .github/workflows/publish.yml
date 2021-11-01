@@ -27,7 +27,7 @@ jobs:
         uses: PaulHatch/semantic-version@v4.0.3
       - name: 'env'
         run: |
-          echo env
+           env
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/setup-java@v1
         with:
