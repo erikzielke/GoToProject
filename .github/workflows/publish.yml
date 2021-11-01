@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Run a multi-line script
         run: |
-          env,
+          env
           echo $CERTIFICATE_CHAIN
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
