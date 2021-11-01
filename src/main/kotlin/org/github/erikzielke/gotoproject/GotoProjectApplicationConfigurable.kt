@@ -16,13 +16,18 @@ class GotoProjectApplicationConfigurable : Configurable {
     override fun createComponent(): JComponent? {
         val state = GoToProjectApplicationComponent.instance.state
         if (settingsForm == null) {
-            settingsForm = panel {
-                row {
-                    checkBox("Include recently opened projects", state::isIncludeRecent)
-                }
-            }
+            settingsForm = createSettingsForm(state)
         }
         return settingsForm
+    }
+
+    private fun createSettingsForm(state: GoToProjectWindowSettings) = panel {
+        row {
+            checkBox("Include recently opened projects", state::isIncludeRecent)
+        }
+        row {
+            checkBox("Panel in search everywhere", state::panelInSearchEverywhere)
+        }
     }
 
     override fun isModified(): Boolean {
