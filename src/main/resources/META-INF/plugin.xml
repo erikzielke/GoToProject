@@ -26,7 +26,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationConfigurable instance="org.github.erikzielke.gotoproject.GotoProjectApplicationConfigurable" />
-
+        <searchEverywhereContributor implementation="org.github.erikzielke.gotoproject.searcheverywhere.GoToProjectSearchEverywhereContributorFactory" />
         <!-- Add your extensions here -->
     </extensions>
 </idea-plugin>
