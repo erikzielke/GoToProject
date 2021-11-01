@@ -25,6 +25,9 @@ jobs:
           fetch-depth: 0
       - name: Git Semantic Version
         uses: PaulHatch/semantic-version@v4.0.3
+      - name: 'env'
+        run: |
+          echo env
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/setup-java@v1
         with:
