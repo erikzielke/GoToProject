@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "org.github.erikzielke.gotoproject"
-version = "1.2.0-SNAPSHOT"
+version = "1.3.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -25,4 +25,16 @@ tasks {
             Converted to Kotlin<br>
             Projects available in Search Everywhere""".trimIndent())
     }
+
+    signPlugin {
+        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
+        privateKey.set(System.getenv("PRIVATE_KEY"))
+        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+    }
+
+    publishPlugin {
+        token.set(System.getenv("PUBLISH_TOKEN"))
+        channels.set(listOf("alpha"))
+    }
+
 }
