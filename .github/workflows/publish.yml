@@ -20,12 +20,12 @@ jobs:
         CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Run a multi-line script
-        run: |
-          env
-          echo $CERTIFICATE_CHAIN
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Git Semantic Version
+        uses: PaulHatch/semantic-version@v4.0.3
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/setup-java@v1
         with:
           java-version: 11
