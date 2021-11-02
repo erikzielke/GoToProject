@@ -6,7 +6,14 @@ name: Publish plugin
 # or API.
 on:
   workflow_dispatch:
-
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Channel to publish to'
+        # Default value if no value is explicitly provided
+        default: 'alpha'
+        # Input has to be provided for the workflow to run
+        required: true
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "greet"
