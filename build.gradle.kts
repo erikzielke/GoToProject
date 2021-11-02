@@ -1,10 +1,25 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath("gradle.plugin.com.github.gradle-git-version-calculator:gradle-git-version-calculator:1.0.0")
+    }
+}
 plugins {
     id("org.jetbrains.intellij") version "1.2.1"
+    id("com.github.gradle-git-version-calculator") version "1.0.0"
     kotlin("jvm") version "1.5.10"
 }
 
+gitVersionCalculator {
+    prefix = "v"
+}
+
+var channel : String = System.getenv("CHANNEL") ?: "alpha"
 group = "org.github.erikzielke.gotoproject"
-version = "1.3.0-SNAPSHOT"
+version = gitVersionCalculator.calculateVersion()
 
 repositories {
     mavenCentral()
@@ -34,7 +49,7 @@ tasks {
 
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
-        channels.set(listOf("alpha"))
+        channels.set(listOf(channel))
     }
 
 }
