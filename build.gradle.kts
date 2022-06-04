@@ -32,7 +32,8 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version.set("202.6948.69")
+    version.set("211.6693.111")
+    updateSinceUntilBuild.set(false)
 }
 tasks {
     patchPluginXml {

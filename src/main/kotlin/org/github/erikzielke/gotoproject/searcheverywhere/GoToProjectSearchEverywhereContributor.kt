@@ -1,10 +1,10 @@
 package org.github.erikzielke.gotoproject.searcheverywhere
 
 import com.intellij.ide.RecentProjectListActionProvider
-import com.intellij.ide.RecentProjectsManagerBase
 import com.intellij.ide.ReopenProjectAction
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor
 import com.intellij.ide.impl.OpenProjectTask
+import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.wm.impl.ProjectWindowAction
@@ -73,16 +73,16 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
 
     private fun reopenProject(selected: ReopenProjectAction): Boolean {
         val file: Path = Paths.get(selected.projectPath).normalize()
-        RecentProjectsManagerBase.instanceEx.openProject(file, OpenProjectTask.withProjectToClose(null, false))
+        val openProjectTask = OpenProjectTask.withProjectToClose(null, false)
+        ProjectUtil.openOrImport(file, openProjectTask)
         return true
     }
 
     override fun getElementsRenderer(): ListCellRenderer<in Any> {
-        return GoToProjectProjectListCellRenderer()
+        return GoToProjectProjectListCellRenderer(this)
     }
 
     override fun getDataForItem(element: Any, dataId: String): Any? {
         return null
     }
 }
-
