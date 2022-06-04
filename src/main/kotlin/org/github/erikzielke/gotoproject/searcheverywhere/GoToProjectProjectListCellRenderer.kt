@@ -3,6 +3,7 @@ package org.github.erikzielke.gotoproject.searcheverywhere
 import com.intellij.ide.RecentProjectsManagerBase
 import com.intellij.ide.ReopenProjectAction
 import com.intellij.ide.actions.SearchEverywherePsiRenderer
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.wm.impl.ProjectWindowAction
 import com.intellij.ui.ColoredListCellRenderer
@@ -10,7 +11,7 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.SimpleTextAttributes
 import javax.swing.JList
 
-class GoToProjectProjectListCellRenderer : SearchEverywherePsiRenderer() {
+class GoToProjectProjectListCellRenderer(disposable: Disposable) : SearchEverywherePsiRenderer(disposable) {
 
     override fun customizeNonPsiElementLeftRenderer(
         renderer: ColoredListCellRenderer<*>?,
