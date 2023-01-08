@@ -3,7 +3,8 @@ package org.github.erikzielke.gotoproject
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.ui.DialogPanel
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.panel
 import javax.swing.JComponent
 
 class GotoProjectApplicationConfigurable : Configurable {
@@ -23,10 +24,10 @@ class GotoProjectApplicationConfigurable : Configurable {
 
     private fun createSettingsForm(state: GoToProjectWindowSettings) = panel {
         row {
-            checkBox("Include recently opened projects", state::isIncludeRecent)
+            checkBox("Include recently opened projects").bindSelected(state::isIncludeRecent)
         }
         row {
-            checkBox("Panel in search everywhere", state::panelInSearchEverywhere)
+            checkBox("Panel in search everywhere").bindSelected(state::panelInSearchEverywhere)
         }
     }
 

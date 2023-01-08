@@ -46,7 +46,7 @@ class GoToProjectProjectListCellRenderer(disposable: Disposable) : SearchEverywh
     ) {
         appendName(list, renderer, projectName)
         appendLocation(projectLocation, renderer)
-        val projectOrAppIcon = RecentProjectsManagerBase.instanceEx.getProjectOrAppIcon(projectLocation)
+        val projectOrAppIcon = RecentProjectsManagerBase.getInstanceEx().getProjectIcon(projectLocation, true)
         renderer.icon = projectOrAppIcon
     }
 

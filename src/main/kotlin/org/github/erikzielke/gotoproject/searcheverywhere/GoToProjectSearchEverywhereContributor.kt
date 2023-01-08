@@ -35,8 +35,7 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
         }
 
         val allRecentProjects = RecentProjectListActionProvider.getInstance().getActions(false)
-
-        val windowActions = WindowDressing.getWindowActionGroup().getChildren(null)
+        val windowActions = WindowDressing.windowActionGroup.getChildren(null)
         val openProjects = windowActions.filterIsInstance<ProjectWindowAction>()
         val openProjectLocations = openProjects.map { it.projectLocation }.toSet()
 
@@ -73,7 +72,7 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
 
     private fun reopenProject(selected: ReopenProjectAction): Boolean {
         val file: Path = Paths.get(selected.projectPath).normalize()
-        val openProjectTask = OpenProjectTask.withProjectToClose(null, false)
+        val openProjectTask = OpenProjectTask.build().withProjectToClose(null)
         ProjectUtil.openOrImport(file, openProjectTask)
         return true
     }
