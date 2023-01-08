@@ -42,7 +42,7 @@ class GoToProject : AnAction() {
     }
 
     private fun addOpenProjects(actionGroup: DefaultActionGroup): Set<String> {
-        val windowActions = WindowDressing.getWindowActionGroup().getChildren(null)
+        val windowActions = WindowDressing.windowActionGroup.getChildren(null)
         val projectWindows = windowActions.filterIsInstance<ProjectWindowAction>().toMutableList()
         moveLastActiveToTop(projectWindows)
         actionGroup.addSeparator("Open Projects")
