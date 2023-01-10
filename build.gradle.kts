@@ -17,7 +17,7 @@ gitVersionCalculator {
     prefix = "v"
 }
 
-var channel : String = System.getenv("CHANNEL") ?: "alpha"
+var channel : String = System.getenv("CHANNEL") ?: ""
 group = "org.github.erikzielke.gotoproject"
 version = gitVersionCalculator.calculateVersion()
 
