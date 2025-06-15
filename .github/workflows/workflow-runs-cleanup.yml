@@ -1,0 +1,112 @@
+name: Workflow Runs Cleanup
+
+# This workflow allows you to clean up GitHub Actions workflow runs for this repository
+# It can be triggered manually from the Actions tab
+
+permissions:
+  # Needed to delete workflow runs
+  actions: write
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      days_old:
+        description: 'Delete workflow runs older than this many days'
+        required: true
+        default: '30'
+        type: string
+      workflow_name:
+        description: 'Specific workflow to clean up (leave empty for all workflows)'
+        required: false
+        type: string
+
+jobs:
+  cleanup:
+    name: Cleanup Workflow Runs
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Cleanup Workflow Runs
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const daysOld = parseInt(core.getInput('days_old'));
+            const workflowName = core.getInput('workflow_name');
+            
+            // Calculate the date threshold
+            const now = new Date();
+            const thresholdDate = new Date(now.getTime() - (daysOld * 24 * 60 * 60 * 1000));
+            
+            console.log(`Cleaning up workflow runs older than ${daysOld} days (before ${thresholdDate.toISOString()})`);
+            
+            // Get all workflows in the repository
+            const workflows = await github.rest.actions.listWorkflowsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            
+            let workflowsToClean = workflows.data.workflows;
+            
+            // Filter by workflow name if specified
+            if (workflowName) {
+              console.log(`Filtering to only clean workflow: ${workflowName}`);
+              workflowsToClean = workflowsToClean.filter(workflow => 
+                workflow.name.toLowerCase() === workflowName.toLowerCase() || 
+                workflow.path.includes(workflowName)
+              );
+              
+              if (workflowsToClean.length === 0) {
+                console.log(`No workflows found matching name: ${workflowName}`);
+                return;
+              }
+            }
+            
+            let totalDeleted = 0;
+            
+            // Process each workflow
+            for (const workflow of workflowsToClean) {
+              console.log(`Processing workflow: ${workflow.name} (${workflow.id})`);
+              
+              // Get workflow runs for this workflow
+              const runs = await github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: workflow.id,
+                per_page: 100
+              });
+              
+              if (runs.data.total_count === 0) {
+                console.log(`No runs found for workflow: ${workflow.name}`);
+                continue;
+              }
+              
+              console.log(`Found ${runs.data.total_count} runs for workflow: ${workflow.name}`);
+              
+              // Filter runs older than the threshold date
+              const runsToDelete = runs.data.workflow_runs.filter(run => {
+                const runDate = new Date(run.created_at);
+                return runDate < thresholdDate;
+              });
+              
+              console.log(`Found ${runsToDelete.length} runs older than ${daysOld} days for workflow: ${workflow.name}`);
+              
+              // Delete each run
+              for (const run of runsToDelete) {
+                console.log(`Deleting run #${run.run_number} (${run.id}) from ${run.created_at}`);
+                
+                try {
+                  await github.rest.actions.deleteWorkflowRun({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    run_id: run.id
+                  });
+                  
+                  totalDeleted++;
+                } catch (error) {
+                  console.log(`Error deleting run ${run.id}: ${error.message}`);
+                }
+              }
+            }
+            
+            console.log(`Workflow runs cleanup completed. Deleted ${totalDeleted} runs.`);
