@@ -2,7 +2,9 @@
     <id>org.github.erikzielke.gotoproject</id>
     <name>Go To Project</name>
     <version>1.3.0</version>
-    <vendor email="erikzielke@hotmail.com" >Erik Zielke</vendor>
+    <vendor email="erikzielke@hotmail.com">Erik Zielke</vendor>
+
+    <resource-bundle>messages</resource-bundle>
 
     <idea-version since-build="223.7571.4"/>
 
@@ -14,23 +16,27 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="GoToProject" class="org.github.erikzielke.gotoproject.GoToProject" text="Go To Project Window">
+        <action id="GoToProject" class="org.github.erikzielke.gotoproject.GoToProject" >
             <add-to-group group-id="OpenProjectWindows" anchor="last"/>
         </action>
-        <action id="GoToLastProject" class="org.github.erikzielke.gotoproject.GoToLastProject" text="Go To Last Project Window">
+        <action id="GoToLastProject" class="org.github.erikzielke.gotoproject.GoToLastProject" >
             <add-to-group group-id="OpenProjectWindows" anchor="last"/>
         </action>
     </actions>
 
     <applicationListeners>
-        <listener class="org.github.erikzielke.gotoproject.focus.GoToProjectProjectManagerListener" topic="com.intellij.openapi.project.ProjectManagerListener" />
+        <listener class="org.github.erikzielke.gotoproject.focus.GoToProjectProjectManagerListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
 
     </applicationListeners>
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="org.github.erikzielke.gotoproject.focus.GoToProjectProjectManagerListener" />
-        <applicationConfigurable instance="org.github.erikzielke.gotoproject.GotoProjectApplicationConfigurable" />
-        <searchEverywhereContributor implementation="org.github.erikzielke.gotoproject.searcheverywhere.GoToProjectSearchEverywhereContributorFactory" />
+        <postStartupActivity
+                implementation="org.github.erikzielke.gotoproject.focus.GoToProjectProjectManagerListener"/>
+        <applicationConfigurable instance="org.github.erikzielke.gotoproject.GotoProjectApplicationConfigurable"
+                                 key="action.goto.text"/>
+        <searchEverywhereContributor
+                implementation="org.github.erikzielke.gotoproject.searcheverywhere.GoToProjectSearchEverywhereContributorFactory"/>
         <!-- Add your extensions here -->
     </extensions>
 </idea-plugin>

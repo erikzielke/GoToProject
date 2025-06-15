@@ -36,7 +36,7 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
         }
 
         val allRecentProjects = RecentProjectListActionProvider.getInstance().getActions(false)
-        val windowActions = WindowDressing.windowActionGroup.getChildren(null)
+        val windowActions = WindowDressing.getWindowActionGroup().childActionsOrStubs
         val openProjects = windowActions.filterIsInstance<ProjectWindowAction>()
         val openProjectLocations = openProjects.map { it.projectLocation }.toSet()
 
@@ -48,6 +48,22 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
         matcher(matcher, consumer, recentProjectsWithoutOpened, openProjects)
     }
 
+    override fun processSelectedItem(selected: Any, modifiers: Int, searchText: String): Boolean {
+        return when (selected) {
+            is ReopenProjectAction -> reopenProject(selected)
+            is ProjectWindowAction -> openSelectedProject(selected)
+            else -> false
+        }
+    }
+
+    override fun getElementsRenderer(): ListCellRenderer<in Any> {
+        return GoToProjectProjectListCellRenderer(this)
+    }
+
+    override fun getDataForItem(element: Any, dataId: String): Any? {
+        return null
+    }
+
     private fun matcher(
         matcher: MinusculeMatcher,
         consumer: Processor<in Any>,
@@ -55,7 +71,7 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
         openProjects: List<ProjectWindowAction>
     ) {
         for (project in recentProjectsWithoutOpened) {
-            if (matcher.matches(project.projectName) && !consumer.process(project)) {
+            if (matcher.matches(project.projectName ?: "* Unknown *") && !consumer.process(project)) {
                 return
             }
         }
@@ -63,14 +79,6 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
             if (matcher.matches(window.projectName) && !consumer.process(window)) {
                 return
             }
-        }
-    }
-
-    override fun processSelectedItem(selected: Any, modifiers: Int, searchText: String): Boolean {
-        return when (selected) {
-            is ReopenProjectAction -> reopenProject(selected)
-            is ProjectWindowAction -> openSelectedProject(selected)
-            else -> false
         }
     }
 
@@ -86,11 +94,4 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
         return true
     }
 
-    override fun getElementsRenderer(): ListCellRenderer<in Any> {
-        return GoToProjectProjectListCellRenderer(this)
-    }
-
-    override fun getDataForItem(element: Any, dataId: String): Any? {
-        return null
-    }
 }

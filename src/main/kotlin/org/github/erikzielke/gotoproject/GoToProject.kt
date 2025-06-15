@@ -16,7 +16,7 @@ import org.github.erikzielke.gotoproject.GoToProjectApplicationComponent.Compani
  */
 class GoToProject : AnAction() {
     /**
-     * Finds the open project window actions available, and shows them in a speed search enabled popup.
+     * Finds the open project window actions available and shows them in a speed-search-enabled popup.
      *
      * @param event the action event.
      */
@@ -42,7 +42,7 @@ class GoToProject : AnAction() {
     }
 
     private fun addOpenProjects(actionGroup: DefaultActionGroup): Set<String> {
-        val windowActions = WindowDressing.windowActionGroup.getChildren(null)
+        val windowActions = WindowDressing.getWindowActionGroup().getChildren(null)
         val projectWindows = windowActions.filterIsInstance<ProjectWindowAction>().toMutableList()
         moveLastActiveToTop(projectWindows)
         actionGroup.addSeparator("Open Projects")

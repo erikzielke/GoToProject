@@ -35,7 +35,7 @@ class GoToProjectProjectListCellRenderer(disposable: Disposable) : SearchEverywh
     }
 
     private fun renderRecentProject(list: JList<*>, renderer: ColoredListCellRenderer<*>, value: ReopenProjectAction) {
-        renderProject(list, value.projectName, value.projectPath, renderer)
+        renderProject(list, value.projectName ?: "* Unknown *", value.projectPath, renderer)
     }
 
     private fun renderProject(

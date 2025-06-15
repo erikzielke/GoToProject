@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 buildscript {
     repositories {
         mavenCentral()
@@ -8,9 +10,9 @@ buildscript {
     }
 }
 plugins {
-    id("org.jetbrains.intellij") version "1.11.0"
+    id("org.jetbrains.intellij.platform") version "2.6.0"
     id("com.github.gradle-git-version-calculator") version "1.0.0"
-    id("org.jetbrains.kotlin.jvm") version "1.7.20"
+    id("org.jetbrains.kotlin.jvm") version "2.1.0"
 }
 
 gitVersionCalculator {
@@ -23,22 +25,26 @@ version = gitVersionCalculator.calculateVersion()
 
 repositories {
     mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
-// See https://github.com/JetBrains/gradle-intellij-plugin/
-intellij {
-    version.set("223.7571.182")
-    updateSinceUntilBuild.set(false)
+dependencies {
+    intellijPlatform {
+        intellijIdeaCommunity("2025.1.1.1")
+        testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
+    }
 }
+
 tasks {
     withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = "21"
+        targetCompatibility = "21"
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "11"
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
     }
-
     patchPluginXml {
         changeNotes.set("""
             Converted to Kotlin<br>
