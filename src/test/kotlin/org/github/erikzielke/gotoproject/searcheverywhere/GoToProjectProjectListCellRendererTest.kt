@@ -1,58 +1,156 @@
 package org.github.erikzielke.gotoproject.searcheverywhere
 
-import kotlin.test.Test
+import com.intellij.ide.ReopenProjectAction
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.wm.impl.ProjectWindowAction
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.ui.ColoredListCellRenderer
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import java.lang.reflect.Method
+import javax.swing.JList
 
 /**
  * Tests for GoToProjectProjectListCellRenderer
  *
- * Note: This class is challenging to test in isolation because:
- * 1. It extends SearchEverywherePsiRenderer, which depends on EditorColorsManager.getInstance()
- * 2. EditorColorsManager.getInstance() depends on ApplicationManager.getApplication(), which is null in tests
- * 3. It uses RecentProjectsManagerBase.getInstanceEx(), which is not easily mockable
- *
- * In a real-world scenario, we would need to:
- * 1. Set up a proper IntelliJ platform test environment
- * 2. Or refactor the code to use dependency injection for better testability
+ * This class uses BasePlatformTestCase to set up a proper IntelliJ platform test environment,
+ * which provides access to the necessary platform services like EditorColorsManager and
+ * RecentProjectsManagerBase.
  */
-class GoToProjectProjectListCellRendererTest {
-    @Test
-    fun `verify renderer can be created`() {
-        // This test is commented out because it will fail due to missing IntelliJ platform services
-        // The following code would create an instance of GoToProjectProjectListCellRenderer:
+class GoToProjectProjectListCellRendererTest : BasePlatformTestCase() {
+    private lateinit var disposable: Disposable
+    private lateinit var renderer: GoToProjectProjectListCellRenderer
+    private lateinit var customizeMethod: Method
 
-        // val disposable = Disposer.newDisposable()
-        // val renderer = GoToProjectProjectListCellRenderer(disposable)
-        // Disposer.dispose(disposable)
+    override fun setUp() {
+        super.setUp()
+        disposable = Disposer.newDisposable()
+        renderer = GoToProjectProjectListCellRenderer(disposable)
+
+        // Use reflection to access the protected method
+        customizeMethod =
+            GoToProjectProjectListCellRenderer::class.java.getDeclaredMethod(
+                "customizeNonPsiElementLeftRenderer",
+                ColoredListCellRenderer::class.java,
+                JList::class.java,
+                Any::class.java,
+                Int::class.java,
+                Boolean::class.java,
+                Boolean::class.java,
+            )
+        customizeMethod.isAccessible = true
     }
 
-    // The following tests would be implemented if we had a proper test environment:
-
-    /*
-    @Test
-    fun `customizeNonPsiElementLeftRenderer should return false when renderer is null`() {
-        // Would verify that customizeNonPsiElementLeftRenderer returns false when renderer is null
+    override fun tearDown() {
+        Disposer.dispose(disposable)
+        super.tearDown()
     }
 
-    @Test
-    fun `customizeNonPsiElementLeftRenderer should return false when list is null`() {
-        // Would verify that customizeNonPsiElementLeftRenderer returns false when list is null
+    fun testRendererCanBeCreated() {
+        // Just verify that the renderer was created successfully in setUp()
+        assertNotNull(renderer)
     }
 
-    @Test
-    fun `customizeNonPsiElementLeftRenderer should return true for ReopenProjectAction`() {
-        // Would verify that customizeNonPsiElementLeftRenderer returns true for ReopenProjectAction
-        // and properly renders the project name, location, and icon
+    fun testCustomizeNonPsiElementLeftRendererReturnsFalseWhenRendererIsNull() {
+        val result =
+            customizeMethod.invoke(
+                renderer,
+                null,
+                mock<JList<Any>>(),
+                "value",
+                0,
+                false,
+                false,
+            ) as Boolean
+
+        assertFalse("Should return false when renderer is null", result)
     }
 
-    @Test
-    fun `customizeNonPsiElementLeftRenderer should return true for ProjectWindowAction`() {
-        // Would verify that customizeNonPsiElementLeftRenderer returns true for ProjectWindowAction
-        // and properly renders the project name, location, and icon
+    fun testCustomizeNonPsiElementLeftRendererReturnsFalseWhenListIsNull() {
+        val mockRenderer = mock<ColoredListCellRenderer<Any>>()
+
+        val result =
+            customizeMethod.invoke(
+                renderer,
+                mockRenderer,
+                null,
+                "value",
+                0,
+                false,
+                false,
+            ) as Boolean
+
+        assertFalse("Should return false when list is null", result)
     }
 
-    @Test
-    fun `customizeNonPsiElementLeftRenderer should return false for unknown value type`() {
-        // Would verify that customizeNonPsiElementLeftRenderer returns false for unknown value types
+    fun testCustomizeNonPsiElementLeftRendererReturnsTrueForReopenProjectAction() {
+        val mockRenderer = mock<ColoredListCellRenderer<Any>>()
+        val mockList = mock<JList<Any>>()
+        val reopenAction = mock<ReopenProjectAction>()
+
+        // Set up the mock ReopenProjectAction
+        whenever(reopenAction.projectName).thenReturn("Test Project")
+        whenever(reopenAction.projectPath).thenReturn("/path/to/project")
+
+        // Configure the mock list to return a foreground color
+        whenever(mockList.foreground).thenReturn(java.awt.Color.BLACK)
+
+        val result =
+            customizeMethod.invoke(
+                renderer,
+                mockRenderer,
+                mockList,
+                reopenAction,
+                0,
+                false,
+                false,
+            ) as Boolean
+
+        assertTrue("Should return true for ReopenProjectAction", result)
     }
-     */
+
+    fun testCustomizeNonPsiElementLeftRendererReturnsTrueForProjectWindowAction() {
+        val mockRenderer = mock<ColoredListCellRenderer<Any>>()
+        val mockList = mock<JList<Any>>()
+        val projectWindowAction = mock<ProjectWindowAction>()
+
+        // Set up the mock ProjectWindowAction
+        whenever(projectWindowAction.projectName).thenReturn("Test Project")
+        whenever(projectWindowAction.projectLocation).thenReturn("/path/to/project")
+
+        // Configure the mock list to return a foreground color
+        whenever(mockList.foreground).thenReturn(java.awt.Color.BLACK)
+
+        val result =
+            customizeMethod.invoke(
+                renderer,
+                mockRenderer,
+                mockList,
+                projectWindowAction,
+                0,
+                false,
+                false,
+            ) as Boolean
+
+        assertTrue("Should return true for ProjectWindowAction", result)
+    }
+
+    fun testCustomizeNonPsiElementLeftRendererReturnsFalseForUnknownValueType() {
+        val mockRenderer = mock<ColoredListCellRenderer<Any>>()
+        val mockList = mock<JList<Any>>()
+
+        val result =
+            customizeMethod.invoke(
+                renderer,
+                mockRenderer,
+                mockList,
+                "Unknown Value Type",
+                0,
+                false,
+                false,
+            ) as Boolean
+
+        assertFalse("Should return false for unknown value types", result)
+    }
 }

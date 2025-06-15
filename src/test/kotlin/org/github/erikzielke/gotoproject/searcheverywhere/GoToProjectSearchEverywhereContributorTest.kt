@@ -1,90 +1,70 @@
 package org.github.erikzielke.gotoproject.searcheverywhere
 
-import kotlin.test.Test
+import com.intellij.ide.ReopenProjectAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.wm.impl.ProjectWindowAction
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 /**
  * Tests for GoToProjectSearchEverywhereContributor
  *
- * Note: This class is challenging to test in isolation because:
- * 1. It depends on GoToProjectApplicationComponent.instance, which uses ApplicationManager.getApplication()
- * 2. ApplicationManager.getApplication() is null in tests
- * 3. It uses RecentProjectListActionProvider.getInstance() and WindowDressing.getWindowActionGroup(),
- * which are not easily mockable
+ * This class uses BasePlatformTestCase to set up a proper IntelliJ platform test environment,
+ * which provides access to the necessary platform services.
  *
- * In a real-world scenario, we would need to:
- * 1. Set up a proper IntelliJ platform test environment
- * 2. Or refactor the code to use dependency injection for better testability
+ * Note: We're only testing methods that don't depend on the static GoToProjectApplicationComponent.instance,
+ * as mocking static methods would require more complex testing frameworks like PowerMock.
  */
-class GoToProjectSearchEverywhereContributorTest {
-    @Test
-    fun `getSearchProviderId should return class simple name`() {
-        // This test is commented out because it will fail due to missing IntelliJ platform services
-        // The following code would verify that getSearchProviderId returns the class simple name:
+class GoToProjectSearchEverywhereContributorTest : BasePlatformTestCase() {
+    private lateinit var contributor: GoToProjectSearchEverywhereContributor
+    private lateinit var mockEvent: AnActionEvent
 
-        // val mockEvent = mock<AnActionEvent>()
-        // val contributor = GoToProjectSearchEverywhereContributor(mockEvent)
-        // assertEquals("GoToProjectSearchEverywhereContributor", contributor.searchProviderId)
+    override fun setUp() {
+        super.setUp()
+        mockEvent = mock()
+        contributor = GoToProjectSearchEverywhereContributor(mockEvent)
     }
 
-    // The following tests would be implemented if we had a proper test environment:
-
-    /*
-    @Test
-    fun `getGroupName should return Projects`() {
-        // Would verify that getGroupName returns "Projects"
+    fun testGetSearchProviderId() {
+        assertEquals("GoToProjectSearchEverywhereContributor", contributor.searchProviderId)
     }
 
-    @Test
-    fun `getSortWeight should return 300`() {
-        // Would verify that getSortWeight returns 300
+    fun testGetGroupName() {
+        assertEquals("Projects", contributor.groupName)
     }
 
-    @Test
-    fun `showInFindResults should return false`() {
-        // Would verify that showInFindResults returns false
+    fun testGetSortWeight() {
+        assertEquals(300, contributor.sortWeight)
     }
 
-    @Test
-    fun `isShownInSeparateTab should return value from settings`() {
-        // Would verify that isShownInSeparateTab
-        returns the value from GoToProjectApplicationComponent.instance.state.panelInSearchEverywhere
+    fun testShowInFindResults() {
+        assertFalse(contributor.showInFindResults())
     }
 
-    @Test
-    fun `fetchElements should do nothing when panelInSearchEverywhere is false`() {
-        // Would verify that fetchElements does nothing when
-        GoToProjectApplicationComponent.instance.state.panelInSearchEverywhere is false
+    fun testProcessSelectedItemReturnsTrue() {
+        // Test with ReopenProjectAction
+        val reopenAction = mock<ReopenProjectAction>()
+        whenever(reopenAction.projectPath).thenReturn("/path/to/project")
+        assertTrue(contributor.processSelectedItem(reopenAction, 0, "test"))
+
+        // Test with ProjectWindowAction
+        val projectWindowAction = mock<ProjectWindowAction>()
+        assertTrue(contributor.processSelectedItem(projectWindowAction, 0, "test"))
     }
 
-    @Test
-    fun `fetchElements should process matching projects when panelInSearchEverywhere is true`() {
-        // Would verify that fetchElements processes matching projects when
-         GoToProjectApplicationComponent.instance.state.panelInSearchEverywhere is true
+    fun testProcessSelectedItemReturnsFalse() {
+        // Test with unknown type
+        assertFalse(contributor.processSelectedItem("unknown", 0, "test"))
     }
 
-    @Test
-    fun `processSelectedItem should return true for ReopenProjectAction`() {
-        // Would verify that processSelectedItem returns true for ReopenProjectAction
+    fun testGetElementsRenderer() {
+        val renderer = contributor.elementsRenderer
+        assertNotNull(renderer)
+        assertTrue(renderer is GoToProjectProjectListCellRenderer)
     }
 
-    @Test
-    fun `processSelectedItem should return true for ProjectWindowAction`() {
-        // Would verify that processSelectedItem returns true for ProjectWindowAction
+    fun testGetDataForItem() {
+        assertNull(contributor.getDataForItem(mock(), "test"))
     }
-
-    @Test
-    fun `processSelectedItem should return false for unknown type`() {
-        // Would verify that processSelectedItem returns false for unknown types
-    }
-
-    @Test
-    fun `getElementsRenderer should return GoToProjectProjectListCellRenderer`() {
-        // Would verify that getElementsRenderer returns an instance of GoToProjectProjectListCellRenderer
-    }
-
-    @Test
-    fun `getDataForItem should return null`() {
-        // Would verify that getDataForItem returns null
-    }
-     */
 }
