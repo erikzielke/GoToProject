@@ -34,7 +34,44 @@ jobs:
         with:
           arguments: spotlessCheck
 
+      - name: Run Detekt analysis
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: detektAll
+
       - name: Build
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
+
+      - name: Generate Kover reports
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: koverReport
+
+      # Upload JUnit test reports as artifacts
+      - name: Upload JUnit test reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: junit-test-reports
+          path: build/reports/tests/test
+          retention-days: 7
+
+      # Upload Kover coverage reports as artifacts
+      - name: Upload Kover coverage reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: kover-coverage-reports
+          path: build/reports/kover
+          retention-days: 7
+
+      # Upload Detekt static analysis reports as artifacts
+      - name: Upload Detekt static analysis reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: detekt-analysis-reports
+          path: build/reports/detekt
+          retention-days: 7
