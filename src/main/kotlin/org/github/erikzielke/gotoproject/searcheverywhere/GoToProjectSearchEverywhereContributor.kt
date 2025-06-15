@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.wm.impl.ProjectWindowAction
 import com.intellij.openapi.wm.impl.WindowDressing
+import com.intellij.psi.codeStyle.MinusculeMatcher
 import com.intellij.psi.codeStyle.NameUtil
 import com.intellij.util.Processor
 import org.github.erikzielke.gotoproject.GoToProjectApplicationComponent
@@ -44,17 +45,25 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
             .filter { it.projectPath !in openProjectLocations }
 
         val matcher = NameUtil.buildMatcher(pattern).build()
+        matcher(matcher, consumer, recentProjectsWithoutOpened, openProjects)
+    }
+
+    private fun matcher(
+        matcher: MinusculeMatcher,
+        consumer: Processor<in Any>,
+        recentProjectsWithoutOpened: List<ReopenProjectAction>,
+        openProjects: List<ProjectWindowAction>
+    ) {
         for (project in recentProjectsWithoutOpened) {
             if (matcher.matches(project.projectName) && !consumer.process(project)) {
                 return
             }
         }
         for (window in openProjects) {
-            if(matcher.matches(window.projectName) && !consumer.process(window)) {
+            if (matcher.matches(window.projectName) && !consumer.process(window)) {
                 return
             }
         }
-
     }
 
     override fun processSelectedItem(selected: Any, modifiers: Int, searchText: String): Boolean {
