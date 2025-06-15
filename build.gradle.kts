@@ -14,6 +14,7 @@ plugins {
     id("com.github.gradle-git-version-calculator") version "1.0.0"
     id("org.jetbrains.kotlin.jvm") version "2.1.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.5"
+    id("org.jetbrains.kotlinx.kover") version "0.7.6"
 }
 
 gitVersionCalculator {
@@ -81,4 +82,39 @@ tasks {
         }
     }
 
+}
+
+koverReport {
+    // Configure default report
+    defaults {
+        // Enable HTML and XML reports
+        html {
+            title = "GoToProject - Kover Coverage Report"
+            onCheck = true
+        }
+        xml {
+            onCheck = true
+        }
+    }
+
+    // Configure filters if needed
+    filters {
+        // Exclude test classes from coverage
+        excludes {
+            // classes("*Test*")
+        }
+    }
+
+    // Set verification rules
+    verify {
+        // Set minimum line coverage threshold to 70%
+        rule {
+            isEnabled = true
+            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+            bound {
+                minValue = 10
+                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+            }
+        }
+    }
 }
