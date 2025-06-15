@@ -5,7 +5,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class GoToProjectWindowSettingsTest {
-
     @Test
     fun `default settings should have isIncludeRecent set to false`() {
         // Arrange

@@ -12,35 +12,44 @@ import com.intellij.ui.SimpleTextAttributes
 import javax.swing.JList
 
 class GoToProjectProjectListCellRenderer(disposable: Disposable) : SearchEverywherePsiRenderer(disposable) {
-
     override fun customizeNonPsiElementLeftRenderer(
         renderer: ColoredListCellRenderer<*>?,
         list: JList<*>?,
         value: Any?,
         index: Int,
         selected: Boolean,
-        hasFocus: Boolean
+        hasFocus: Boolean,
     ): Boolean {
         if (renderer == null || list == null) return false
 
-        val result = when (value) {
-            is ReopenProjectAction -> {
-                renderRecentProject(list, renderer, value)
-                true
+        val result =
+            when (value) {
+                is ReopenProjectAction -> {
+                    renderRecentProject(list, renderer, value)
+                    true
+                }
+                is ProjectWindowAction -> {
+                    renderOpenProject(list, renderer, value)
+                    true
+                }
+                else -> false
             }
-            is ProjectWindowAction -> {
-                renderOpenProject(list, renderer, value)
-                true
-            }
-            else -> false
-        }
         return result
     }
-    private fun renderOpenProject(list: JList<*>, renderer: ColoredListCellRenderer<*>, value: ProjectWindowAction) {
+
+    private fun renderOpenProject(
+        list: JList<*>,
+        renderer: ColoredListCellRenderer<*>,
+        value: ProjectWindowAction,
+    ) {
         renderProject(list, value.projectName, value.projectLocation, renderer)
     }
 
-    private fun renderRecentProject(list: JList<*>, renderer: ColoredListCellRenderer<*>, value: ReopenProjectAction) {
+    private fun renderRecentProject(
+        list: JList<*>,
+        renderer: ColoredListCellRenderer<*>,
+        value: ReopenProjectAction,
+    ) {
         renderProject(list, value.projectName ?: "* Unknown *", value.projectPath, renderer)
     }
 
@@ -48,7 +57,7 @@ class GoToProjectProjectListCellRenderer(disposable: Disposable) : SearchEverywh
         list: JList<*>,
         projectName: String,
         projectLocation: String,
-        renderer: ColoredListCellRenderer<*>
+        renderer: ColoredListCellRenderer<*>,
     ) {
         appendName(list, renderer, projectName)
         appendLocation(projectLocation, renderer)
@@ -56,16 +65,22 @@ class GoToProjectProjectListCellRenderer(disposable: Disposable) : SearchEverywh
         renderer.icon = projectOrAppIcon
     }
 
-    private fun appendName(list: JList<*>, renderer: ColoredListCellRenderer<*>, projectName: String) {
+    private fun appendName(
+        list: JList<*>,
+        renderer: ColoredListCellRenderer<*>,
+        projectName: String,
+    ) {
         val color = list.foreground
         val nameAttributes = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, color)
         renderer.append("$projectName ", nameAttributes)
     }
 
-    private fun appendLocation(projectLocation: String, renderer: ColoredListCellRenderer<*>) {
+    private fun appendLocation(
+        projectLocation: String,
+        renderer: ColoredListCellRenderer<*>,
+    ) {
         if (!StringUtil.isEmpty(projectLocation)) {
             renderer.append(projectLocation, SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.GRAY))
         }
     }
-
 }

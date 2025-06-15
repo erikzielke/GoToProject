@@ -15,13 +15,14 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "2.1.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.5"
     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+    id("com.diffplug.spotless") version "6.25.0"
 }
 
 gitVersionCalculator {
     prefix = "v"
 }
 
-var channel : String = System.getenv("CHANNEL") ?: ""
+var channel: String = System.getenv("CHANNEL") ?: ""
 group = "org.github.erikzielke.gotoproject"
 version = gitVersionCalculator.calculateVersion()
 
@@ -50,9 +51,12 @@ tasks {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
     }
     patchPluginXml {
-        changeNotes.set("""
+        changeNotes.set(
+            """
             Converted to Kotlin<br>
-            Projects available in Search Everywhere""".trimIndent())
+            Projects available in Search Everywhere
+            """.trimIndent(),
+        )
     }
 
     signPlugin {
@@ -77,11 +81,10 @@ tasks {
         exclude("**/build/**", "**/resources/**")
         reports {
             sarif.required = true
-            sarif.outputLocation.set(file("${projectDir}/build/reports/detekt/detekt.sarif"))
+            sarif.outputLocation.set(file("$projectDir/build/reports/detekt/detekt.sarif"))
             html.required = true
         }
     }
-
 }
 
 koverReport {
@@ -116,5 +119,32 @@ koverReport {
                 aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
             }
         }
+    }
+}
+
+spotless {
+    kotlin {
+        // Use ktlint for Kotlin formatting
+        ktlint()
+        // Enforce specific end-of-line character
+        endWithNewline()
+        // Remove trailing whitespace
+        trimTrailingWhitespace()
+        // Enforce specific indentation
+        indentWithSpaces(4)
+        // Apply formatting to all Kotlin files
+        target("src/**/*.kt")
+    }
+    kotlinGradle {
+        // Use ktlint for Kotlin Gradle files formatting
+        ktlint()
+        // Enforce specific end-of-line character
+        endWithNewline()
+        // Remove trailing whitespace
+        trimTrailingWhitespace()
+        // Enforce specific indentation
+        indentWithSpaces(4)
+        // Apply formatting to all Kotlin Gradle files
+        target("*.gradle.kts")
     }
 }

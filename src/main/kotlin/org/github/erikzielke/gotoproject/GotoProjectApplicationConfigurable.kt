@@ -22,14 +22,15 @@ class GotoProjectApplicationConfigurable : Configurable {
         return settingsForm
     }
 
-    private fun createSettingsForm(state: GoToProjectWindowSettings) = panel {
-        row {
-            checkBox("Include recently opened projects").bindSelected(state::isIncludeRecent)
+    private fun createSettingsForm(state: GoToProjectWindowSettings) =
+        panel {
+            row {
+                checkBox("Include recently opened projects").bindSelected(state::isIncludeRecent)
+            }
+            row {
+                checkBox("Panel in search everywhere").bindSelected(state::panelInSearchEverywhere)
+            }
         }
-        row {
-            checkBox("Panel in search everywhere").bindSelected(state::panelInSearchEverywhere)
-        }
-    }
 
     override fun isModified(): Boolean {
         return settingsForm?.isModified() ?: false
@@ -47,5 +48,4 @@ class GotoProjectApplicationConfigurable : Configurable {
     override fun disposeUIResources() {
         settingsForm = null
     }
-
 }

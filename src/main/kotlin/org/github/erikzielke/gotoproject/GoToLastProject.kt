@@ -14,5 +14,4 @@ class GoToLastProject : AnAction() {
     }
 
     override fun isDumbAware() = true
-
 }

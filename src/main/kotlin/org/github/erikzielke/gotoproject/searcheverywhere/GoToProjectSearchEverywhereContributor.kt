@@ -22,7 +22,7 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
         return javaClass.simpleName
     }
 
-    override fun getGroupName() =  "Projects"
+    override fun getGroupName() = "Projects"
 
     override fun getSortWeight() = 300
 
@@ -30,8 +30,12 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
 
     override fun isShownInSeparateTab() = GoToProjectApplicationComponent.instance.state.panelInSearchEverywhere
 
-    override fun fetchElements(pattern: String, progressIndicator: ProgressIndicator, consumer: Processor<in Any>) {
-        if(!GoToProjectApplicationComponent.instance.state.panelInSearchEverywhere) {
+    override fun fetchElements(
+        pattern: String,
+        progressIndicator: ProgressIndicator,
+        consumer: Processor<in Any>,
+    ) {
+        if (!GoToProjectApplicationComponent.instance.state.panelInSearchEverywhere) {
             return
         }
 
@@ -40,15 +44,20 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
         val openProjects = windowActions.filterIsInstance<ProjectWindowAction>()
         val openProjectLocations = openProjects.map { it.projectLocation }.toSet()
 
-        val recentProjectsWithoutOpened: List<ReopenProjectAction> = allRecentProjects
-            .map { it as ReopenProjectAction }
-            .filter { it.projectPath !in openProjectLocations }
+        val recentProjectsWithoutOpened: List<ReopenProjectAction> =
+            allRecentProjects
+                .map { it as ReopenProjectAction }
+                .filter { it.projectPath !in openProjectLocations }
 
         val matcher = NameUtil.buildMatcher(pattern).build()
         matcher(matcher, consumer, recentProjectsWithoutOpened, openProjects)
     }
 
-    override fun processSelectedItem(selected: Any, modifiers: Int, searchText: String): Boolean {
+    override fun processSelectedItem(
+        selected: Any,
+        modifiers: Int,
+        searchText: String,
+    ): Boolean {
         return when (selected) {
             is ReopenProjectAction -> reopenProject(selected)
             is ProjectWindowAction -> openSelectedProject(selected)
@@ -60,7 +69,10 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
         return GoToProjectProjectListCellRenderer(this)
     }
 
-    override fun getDataForItem(element: Any, dataId: String): Any? {
+    override fun getDataForItem(
+        element: Any,
+        dataId: String,
+    ): Any? {
         return null
     }
 
@@ -68,7 +80,7 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
         matcher: MinusculeMatcher,
         consumer: Processor<in Any>,
         recentProjectsWithoutOpened: List<ReopenProjectAction>,
-        openProjects: List<ProjectWindowAction>
+        openProjects: List<ProjectWindowAction>,
     ) {
         for (project in recentProjectsWithoutOpened) {
             if (matcher.matches(project.projectName ?: "* Unknown *") && !consumer.process(project)) {
@@ -93,5 +105,4 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
         ProjectUtil.openOrImport(file, openProjectTask)
         return true
     }
-
 }

@@ -27,17 +27,21 @@ class GoToProject : AnAction() {
         showPopup(actionGroup, event)
     }
 
-    private fun showPopup(actionGroup: DefaultActionGroup, event: AnActionEvent) {
+    private fun showPopup(
+        actionGroup: DefaultActionGroup,
+        event: AnActionEvent,
+    ) {
         val eventProject = getEventProject(event) ?: return
 
         val jbPopupFactory = JBPopupFactory.getInstance()
-        val actionGroupPopup = jbPopupFactory.createActionGroupPopup(
-            "Go To Project Window",
-            actionGroup,
-            event.dataContext,
-            SPEEDSEARCH,
-            true
-        )
+        val actionGroupPopup =
+            jbPopupFactory.createActionGroupPopup(
+                "Go To Project Window",
+                actionGroup,
+                event.dataContext,
+                SPEEDSEARCH,
+                true,
+            )
         actionGroupPopup.showCenteredInCurrentWindow(eventProject)
     }
 
@@ -63,7 +67,7 @@ class GoToProject : AnAction() {
     private fun addRecentProjects(
         instance: GoToProjectApplicationComponent,
         openProjects: Set<String>,
-        actionGroup: DefaultActionGroup
+        actionGroup: DefaultActionGroup,
     ) {
         if (!instance.state.isIncludeRecent) {
             return
@@ -76,5 +80,4 @@ class GoToProject : AnAction() {
     }
 
     override fun isDumbAware() = true
-
 }

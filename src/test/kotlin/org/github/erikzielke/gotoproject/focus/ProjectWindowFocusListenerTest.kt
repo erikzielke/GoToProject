@@ -1,19 +1,18 @@
 package org.github.erikzielke.gotoproject.focus
 
 import com.intellij.openapi.project.Project
-import kotlin.test.BeforeTest
-import kotlin.test.Test
 import org.github.erikzielke.gotoproject.GoToProjectApplicationComponent
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.awt.Window
 import java.awt.event.WindowEvent
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 
 class ProjectWindowFocusListenerTest {
-
     private lateinit var mockComponent: GoToProjectApplicationComponent
 
     @BeforeTest

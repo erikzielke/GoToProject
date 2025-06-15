@@ -1,15 +1,14 @@
 package org.github.erikzielke.gotoproject
 
 import com.intellij.openapi.project.Project
+import org.mockito.kotlin.mock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertSame
-import org.mockito.kotlin.mock
 
 class GoToProjectApplicationComponentTest {
-
     @Test
     fun `getState should return the current state`() {
         // Arrange
