@@ -83,5 +83,4 @@ class GoToProjectTest : BasePlatformTestCase() {
             )
         assertNotNull("showPopup method should exist", showPopupMethod)
     }
-
 }
