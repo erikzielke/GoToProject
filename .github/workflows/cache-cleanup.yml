@@ -1,0 +1,45 @@
+name: Cache Cleanup
+
+# This workflow allows you to clean up GitHub Actions caches for this repository
+# It can be triggered manually from the Actions tab
+
+permissions:
+  # Needed to delete caches
+  actions: write
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    name: Cleanup Caches
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Cleanup
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const caches = await github.rest.actions.getActionsCacheList({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
+            
+            if (caches.data.actions_caches.length === 0) {
+              console.log('No caches found to delete')
+              return
+            }
+            
+            console.log(`Found ${caches.data.actions_caches.length} caches to delete`)
+            
+            for (const cache of caches.data.actions_caches) {
+              console.log(`Deleting cache with ID: ${cache.id}, key: ${cache.key}`)
+              await github.rest.actions.deleteActionsCacheById({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                cache_id: cache.id
+              })
+            }
+            
+            console.log('Cache cleanup completed')
