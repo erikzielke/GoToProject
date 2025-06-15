@@ -21,15 +21,21 @@ class GoToProjectProjectListCellRenderer(disposable: Disposable) : SearchEverywh
         selected: Boolean,
         hasFocus: Boolean
     ): Boolean {
-        if (renderer == null) return false
-        if (list == null) return false
-        when (value) {
-            is ReopenProjectAction -> renderRecentProject(list, renderer, value)
-            is ProjectWindowAction -> renderOpenProject(list, renderer, value)
-        }
-        return true
-    }
+        if (renderer == null || list == null) return false
 
+        val result = when (value) {
+            is ReopenProjectAction -> {
+                renderRecentProject(list, renderer, value)
+                true
+            }
+            is ProjectWindowAction -> {
+                renderOpenProject(list, renderer, value)
+                true
+            }
+            else -> false
+        }
+        return result
+    }
     private fun renderOpenProject(list: JList<*>, renderer: ColoredListCellRenderer<*>, value: ProjectWindowAction) {
         renderProject(list, value.projectName, value.projectLocation, renderer)
     }
