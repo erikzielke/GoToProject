@@ -13,6 +13,7 @@ plugins {
     id("org.jetbrains.intellij.platform") version "2.6.0"
     id("com.github.gradle-git-version-calculator") version "1.0.0"
     id("org.jetbrains.kotlin.jvm") version "2.1.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.5"
 }
 
 gitVersionCalculator {
@@ -60,6 +61,22 @@ tasks {
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
         channels.set(listOf(channel))
+    }
+
+    // Custom task to run detekt and generate reports
+    register<io.gitlab.arturbosch.detekt.Detekt>("detektAll") {
+        description = "Run detekt analysis on the whole project"
+        parallel = true
+        buildUponDefaultConfig = true
+        setSource(files(projectDir))
+        config.setFrom(files("$projectDir/config/detekt/detekt.yml"))
+        include("**/*.kt", "**/*.kts")
+        exclude("**/build/**", "**/resources/**")
+        reports {
+            sarif.required = true
+            sarif.outputLocation.set(file("${layout.buildDirectory}/reports/detekt/detekt.sarif.json"))
+            html.required = true
+        }
     }
 
 }
