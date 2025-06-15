@@ -25,29 +25,54 @@ jobs:
   cleanup:
     name: Cleanup Workflow Runs
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Cleanup Workflow Runs
         uses: actions/github-script@v6
         with:
           script: |
-            const daysOld = parseInt(core.getInput('days_old'));
+            let daysOld;
+            try {
+              daysOld = parseInt(core.getInput('days_old'));
+
+              // Validate days_old is a positive number
+              if (isNaN(daysOld) || daysOld <= 0) {
+                console.log(`Invalid days_old value: ${core.getInput('days_old')}. Using default of 30 days.`);
+                daysOld = 30;
+              }
+            } catch (error) {
+              console.log(`Error parsing days_old: ${error.message}. Using default of 30 days.`);
+              daysOld = 30;
+            }
+
             const workflowName = core.getInput('workflow_name');
-            
+
             // Calculate the date threshold
-            const now = new Date();
-            const thresholdDate = new Date(now.getTime() - (daysOld * 24 * 60 * 60 * 1000));
-            
+            let thresholdDate;
+            try {
+              const now = new Date();
+              thresholdDate = new Date(now.getTime() - (daysOld * 24 * 60 * 60 * 1000));
+
+              // Validate threshold date
+              if (isNaN(thresholdDate.getTime())) {
+                throw new Error(`Invalid threshold date calculated. Using days_old: ${daysOld}`);
+              }
+            } catch (error) {
+              console.log(`Error calculating threshold date: ${error.message}. Using current time minus 30 days.`);
+              const now = new Date();
+              thresholdDate = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+            }
+
             console.log(`Cleaning up workflow runs older than ${daysOld} days (before ${thresholdDate.toISOString()})`);
-            
+
             // Get all workflows in the repository
             const workflows = await github.rest.actions.listWorkflowsForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo
             });
-            
+
             let workflowsToClean = workflows.data.workflows;
-            
+
             // Filter by workflow name if specified
             if (workflowName) {
               console.log(`Filtering to only clean workflow: ${workflowName}`);
@@ -55,19 +80,19 @@ jobs:
                 workflow.name.toLowerCase() === workflowName.toLowerCase() || 
                 workflow.path.includes(workflowName)
               );
-              
+
               if (workflowsToClean.length === 0) {
                 console.log(`No workflows found matching name: ${workflowName}`);
                 return;
               }
             }
-            
+
             let totalDeleted = 0;
-            
+
             // Process each workflow
             for (const workflow of workflowsToClean) {
               console.log(`Processing workflow: ${workflow.name} (${workflow.id})`);
-              
+
               // Get workflow runs for this workflow
               const runs = await github.rest.actions.listWorkflowRuns({
                 owner: context.repo.owner,
@@ -75,38 +100,52 @@ jobs:
                 workflow_id: workflow.id,
                 per_page: 100
               });
-              
+
               if (runs.data.total_count === 0) {
                 console.log(`No runs found for workflow: ${workflow.name}`);
                 continue;
               }
-              
+
               console.log(`Found ${runs.data.total_count} runs for workflow: ${workflow.name}`);
-              
+
               // Filter runs older than the threshold date
               const runsToDelete = runs.data.workflow_runs.filter(run => {
-                const runDate = new Date(run.created_at);
-                return runDate < thresholdDate;
+                try {
+                  if (!run.created_at) {
+                    console.log(`Run ${run.id} has no created_at date, skipping`);
+                    return false;
+                  }
+                  const runDate = new Date(run.created_at);
+                  // Check if the date is valid
+                  if (isNaN(runDate.getTime())) {
+                    console.log(`Run ${run.id} has invalid created_at date: ${run.created_at}, skipping`);
+                    return false;
+                  }
+                  return runDate < thresholdDate;
+                } catch (error) {
+                  console.log(`Error processing date for run ${run.id}: ${error.message}, skipping`);
+                  return false;
+                }
               });
-              
+
               console.log(`Found ${runsToDelete.length} runs older than ${daysOld} days for workflow: ${workflow.name}`);
-              
+
               // Delete each run
               for (const run of runsToDelete) {
                 console.log(`Deleting run #${run.run_number} (${run.id}) from ${run.created_at}`);
-                
+
                 try {
                   await github.rest.actions.deleteWorkflowRun({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     run_id: run.id
                   });
-                  
+
                   totalDeleted++;
                 } catch (error) {
                   console.log(`Error deleting run ${run.id}: ${error.message}`);
                 }
               }
             }
-            
+
             console.log(`Workflow runs cleanup completed. Deleted ${totalDeleted} runs.`);
