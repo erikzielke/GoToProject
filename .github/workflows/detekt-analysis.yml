@@ -64,8 +64,8 @@ jobs:
           jq \
             --arg github_workspace ${{ github.workspace }} \
             '. | ( .runs[].results[].locations[].physicalLocation.artifactLocation.uri |= if test($github_workspace) then .[($github_workspace | length | . + 1):] else . end )' \
-            ${{ github.workspace }}/build/reports/detekt/detekt.sarif.json
-        )" > ${{ github.workspace }}/build/reports/detekt/detekt.sarif.json
+            ${{ github.workspace }}/build/reports/detekt/detekt.sarif
+        )" > ${{ github.workspace }}/build/reports/detekt/detekt.sarit
 
     # Uploads results to GitHub repository using the upload-sarif action
     - uses: github/codeql-action/upload-sarif@v3

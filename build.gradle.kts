@@ -77,7 +77,7 @@ tasks {
         exclude("**/build/**", "**/resources/**")
         reports {
             sarif.required = true
-            sarif.outputLocation.set(file("${layout.buildDirectory}/reports/detekt/detekt.sarif.json"))
+            sarif.outputLocation.set(file("${layout.buildDirectory}/reports/detekt/detekt.sarif"))
             html.required = true
         }
     }
