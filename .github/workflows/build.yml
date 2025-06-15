@@ -47,7 +47,7 @@ jobs:
       - name: Generate Kover reports
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: koverReport
+          arguments: koverBinaryReport koverHtmlReport koverXmlReport
 
       # Upload JUnit test reports as artifacts
       - name: Upload JUnit test reports
