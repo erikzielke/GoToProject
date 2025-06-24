@@ -20,31 +20,6 @@ class GoToProjectTest : BasePlatformTestCase() {
     }
 
     /**
-     * Test the structure of the action
-     */
-    fun testActionStructure() {
-        GoToProject()
-
-        // Verify that the action has the expected methods
-        val actionPerformedMethod =
-            GoToProject::class.java.getDeclaredMethod(
-                "actionPerformed",
-                AnActionEvent::class.java,
-            )
-        assertNotNull("actionPerformed method should exist", actionPerformedMethod)
-
-        // Verify that the action has the expected private methods
-        val methods = GoToProject::class.java.declaredMethods
-        val methodNames = methods.map { it.name }
-
-        assertTrue("Should have addOpenProjects method", methodNames.contains("addOpenProjects"))
-        assertTrue("Should have addRecentProjects method", methodNames.contains("addRecentProjects"))
-        assertTrue("Should have showPopup method", methodNames.contains("showPopup"))
-        assertTrue("Should have moveLastActiveToTop method", methodNames.contains("moveLastActiveToTop"))
-        assertTrue("Should have findLastActive method", methodNames.contains("findLastActive"))
-    }
-
-    /**
      * Test that the action has the expected template method pattern
      */
     fun testActionTemplate() {

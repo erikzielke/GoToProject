@@ -5,10 +5,11 @@ import com.intellij.ide.ReopenProjectAction
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.SPEEDSEARCH
 import com.intellij.openapi.wm.impl.ProjectWindowAction
-import com.intellij.openapi.wm.impl.WindowDressing
 import org.github.erikzielke.gotoproject.GoToProjectApplicationComponent.Companion.instance
 
 /**
@@ -46,22 +47,37 @@ class GoToProject : AnAction() {
     }
 
     private fun addOpenProjects(actionGroup: DefaultActionGroup): Set<String> {
-        val windowActions = WindowDressing.getWindowActionGroup().getChildren(null)
-        val projectWindows = windowActions.filterIsInstance<ProjectWindowAction>().toMutableList()
-        moveLastActiveToTop(projectWindows)
+        val openProjects = ProjectManager.getInstance().openProjects
+
+        val findLastActive: Project? = findLastActive(openProjects.toList())
+        val sortedProjects =
+            openProjects.sortedWith(
+                compareByDescending {
+                    // You can implement custom sorting logic here, e.g., by last access time
+                    it.presentableUrl == findLastActive?.presentableUrl
+                },
+            )
+
+        val projectPaths = mutableSetOf<String>()
+
         actionGroup.addSeparator("Open Projects")
-        actionGroup.addAll(projectWindows)
-        return projectWindows.map { it.projectLocation }.toSet()
+
+        for (project in sortedProjects) {
+            if (!project.isDisposed) {
+                val projectPath = project.basePath ?: continue
+                projectPaths.add(projectPath)
+
+                // Create and add action for this project
+                val action = ProjectWindowAction(project.name, projectPath, null)
+                actionGroup.add(action)
+            }
+        }
+
+        return projectPaths
     }
 
-    private fun moveLastActiveToTop(projectWindows: MutableList<ProjectWindowAction>) {
-        val lastActive = findLastActive(projectWindows) ?: return
-        projectWindows.remove(lastActive)
-        projectWindows.add(0, lastActive)
-    }
-
-    private fun findLastActive(projectWindows: List<ProjectWindowAction>): ProjectWindowAction? {
-        return projectWindows.find { it.projectLocation == instance.focusedBefore?.presentableUrl }
+    private fun findLastActive(locations: List<Project>): Project? {
+        return locations.find { it.presentableUrl == instance.focusedBefore?.presentableUrl }
     }
 
     private fun addRecentProjects(
