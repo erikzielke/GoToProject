@@ -27,6 +27,7 @@ jobs:
         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
         CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+        CHANNEL: ${{ github.event.inputs.name }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
@@ -37,6 +38,9 @@ jobs:
       - name: 'env'
         run: |
            env
+      - name: 'Show selected channel'
+        run: |
+          echo "Publishing to channel: $PUBLISH_CHANNEL"
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/setup-java@v1
         with:
