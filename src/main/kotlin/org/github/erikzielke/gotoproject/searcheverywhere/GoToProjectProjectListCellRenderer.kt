@@ -11,7 +11,9 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.SimpleTextAttributes
 import javax.swing.JList
 
-class GoToProjectProjectListCellRenderer(disposable: Disposable) : SearchEverywherePsiRenderer(disposable) {
+class GoToProjectProjectListCellRenderer(
+    disposable: Disposable,
+) : SearchEverywherePsiRenderer(disposable) {
     override fun customizeNonPsiElementLeftRenderer(
         renderer: ColoredListCellRenderer<*>?,
         list: JList<*>?,

@@ -32,9 +32,7 @@ class GotoProjectApplicationConfigurable : Configurable {
             }
         }
 
-    override fun isModified(): Boolean {
-        return settingsForm?.isModified() ?: false
-    }
+    override fun isModified(): Boolean = settingsForm?.isModified() ?: false
 
     @Throws(ConfigurationException::class)
     override fun apply() {

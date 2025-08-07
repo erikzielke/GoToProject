@@ -17,10 +17,10 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import javax.swing.ListCellRenderer
 
-class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEvent) : SearchEverywhereContributor<Any> {
-    override fun getSearchProviderId(): String {
-        return javaClass.simpleName
-    }
+class GoToProjectSearchEverywhereContributor(
+    private val initEvent: AnActionEvent,
+) : SearchEverywhereContributor<Any> {
+    override fun getSearchProviderId(): String = javaClass.simpleName
 
     override fun getGroupName() = "Projects"
 
@@ -57,24 +57,19 @@ class GoToProjectSearchEverywhereContributor(private val initEvent: AnActionEven
         selected: Any,
         modifiers: Int,
         searchText: String,
-    ): Boolean {
-        return when (selected) {
+    ): Boolean =
+        when (selected) {
             is ReopenProjectAction -> reopenProject(selected)
             is ProjectWindowAction -> openSelectedProject(selected)
             else -> false
         }
-    }
 
-    override fun getElementsRenderer(): ListCellRenderer<in Any> {
-        return GoToProjectProjectListCellRenderer(this)
-    }
+    override fun getElementsRenderer(): ListCellRenderer<in Any> = GoToProjectProjectListCellRenderer(this)
 
     override fun getDataForItem(
         element: Any,
         dataId: String,
-    ): Any? {
-        return null
-    }
+    ): Any? = null
 
     private fun matcher(
         matcher: MinusculeMatcher,

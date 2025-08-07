@@ -76,9 +76,10 @@ class GoToProject : AnAction() {
         return projectPaths
     }
 
-    private fun findLastActive(locations: List<Project>): Project? {
-        return locations.find { it.presentableUrl == instance.focusedBefore?.presentableUrl }
-    }
+    private fun findLastActive(locations: List<Project>): Project? =
+        locations.find {
+            it.presentableUrl == instance.focusedBefore?.presentableUrl
+        }
 
     private fun addRecentProjects(
         instance: GoToProjectApplicationComponent,
