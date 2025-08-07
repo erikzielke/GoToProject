@@ -14,7 +14,7 @@ plugins {
     id("com.github.gradle-git-version-calculator") version "1.1.0"
     id("org.jetbrains.kotlin.jvm") version "2.2.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
-    id("org.jetbrains.kotlinx.kover") version "0.7.6"
+    id("org.jetbrains.kotlinx.kover") version "0.9.1"
     id("com.diffplug.spotless") version "7.2.1"
 }
 
@@ -87,36 +87,12 @@ tasks {
     }
 }
 
-koverReport {
-    // Configure default report
-    defaults {
-        // Enable HTML and XML reports
-        html {
-            title = "GoToProject - Kover Coverage Report"
-            onCheck = true
-        }
-        xml {
-            onCheck = true
-        }
-    }
-
-    // Configure filters if needed
-    filters {
-        // Exclude test classes from coverage
-        excludes {
-            // classes("*Test*")
-        }
-    }
-
-    // Set verification rules
-    verify {
-        // Set minimum line coverage threshold to 70%
-        rule {
-            isEnabled = true
-            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
-            bound {
-                minValue = 10
-                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+kover {
+    reports {
+        verify {
+            // add new verification rule
+            rule {
+                minBound(30)
             }
         }
     }
@@ -131,7 +107,7 @@ spotless {
         // Remove trailing whitespace
         trimTrailingWhitespace()
         // Enforce specific indentation
-        indentWithSpaces(4)
+        leadingTabsToSpaces(4)
         // Apply formatting to all Kotlin files
         target("src/**/*.kt")
     }
@@ -143,7 +119,7 @@ spotless {
         // Remove trailing whitespace
         trimTrailingWhitespace()
         // Enforce specific indentation
-        indentWithSpaces(4)
+        leadingTabsToSpaces(4)
         // Apply formatting to all Kotlin Gradle files
         target("*.gradle.kts")
     }
