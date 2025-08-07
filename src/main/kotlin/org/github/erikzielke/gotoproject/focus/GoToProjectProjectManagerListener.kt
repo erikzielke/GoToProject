@@ -7,7 +7,10 @@ import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.wm.WindowManager
 import javax.swing.JFrame
 
-class GoToProjectProjectManagerListener : ProjectActivity, ProjectManagerListener, DumbAware {
+class GoToProjectProjectManagerListener :
+    ProjectActivity,
+    ProjectManagerListener,
+    DumbAware {
     override fun projectClosed(project: Project) {
         val listener = listeners[project]
         WindowManager.getInstance().getFrame(project)?.removeWindowFocusListener(listener)
