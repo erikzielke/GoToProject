@@ -12,7 +12,7 @@ buildscript {
 plugins {
     id("org.jetbrains.intellij.platform") version "2.6.0"
     id("com.github.gradle-git-version-calculator") version "1.0.0"
-    id("org.jetbrains.kotlin.jvm") version "2.1.0"
+    id("org.jetbrains.kotlin.jvm") version "2.2.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.5"
     id("org.jetbrains.kotlinx.kover") version "0.7.6"
     id("com.diffplug.spotless") version "6.25.0"
