@@ -90,7 +90,12 @@ class GoToProject : AnAction() {
             return
         }
         actionGroup.addSeparator("Recent Projects")
-        val allRecentProjects = RecentProjectListActionProvider.getInstance().getActions(false)
+        val allRecentProjects =
+            RecentProjectListActionProvider.getInstance().getActions(
+                false,
+                useGroups = false,
+                allowCustomProjectActions = false,
+            )
         val recentProjectsWithoutOpened =
             allRecentProjects.map { it as ReopenProjectAction }.filter { it.projectPath !in openProjects }
         actionGroup.addAll(recentProjectsWithoutOpened)
