@@ -107,7 +107,7 @@ spotless {
         // Remove trailing whitespace
         trimTrailingWhitespace()
         // Enforce specific indentation
-        leadingTabsToSpaces (4)
+        leadingTabsToSpaces(4)
         // Apply formatting to all Kotlin files
         target("src/**/*.kt")
     }
@@ -119,7 +119,7 @@ spotless {
         // Remove trailing whitespace
         trimTrailingWhitespace()
         // Enforce specific indentation
-        leadingTabsToSpaces (4)
+        leadingTabsToSpaces(4)
         // Apply formatting to all Kotlin Gradle files
         target("*.gradle.kts")
     }
