@@ -6,12 +6,12 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("gradle.plugin.com.github.gradle-git-version-calculator:gradle-git-version-calculator:1.0.0")
+        classpath("gradle.plugin.com.github.gradle-git-version-calculator:gradle-git-version-calculator:1.1.0")
     }
 }
 plugins {
     id("org.jetbrains.intellij.platform") version "2.6.0"
-    id("com.github.gradle-git-version-calculator") version "1.0.0"
+    id("com.github.gradle-git-version-calculator") version "1.1.0"
     id("org.jetbrains.kotlin.jvm") version "2.2.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.5"
     id("org.jetbrains.kotlinx.kover") version "0.7.6"
