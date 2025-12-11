@@ -14,6 +14,7 @@ class GoToProjectProjectManagerListener :
     override fun projectClosed(project: Project) {
         val listener = listeners[project]
         WindowManager.getInstance().getFrame(project)?.removeWindowFocusListener(listener)
+        projects.remove(project)
     }
 
     override suspend fun execute(project: Project) {
@@ -21,7 +22,9 @@ class GoToProjectProjectManagerListener :
         val listener = ProjectWindowFocusListener(project)
         listeners[project] = listener
         projectFrame?.addWindowFocusListener(listener)
+        projects.add(project)
     }
 }
 
 val listeners = mutableMapOf<Project, ProjectWindowFocusListener>()
+val projects: MutableList<Project> = mutableListOf()

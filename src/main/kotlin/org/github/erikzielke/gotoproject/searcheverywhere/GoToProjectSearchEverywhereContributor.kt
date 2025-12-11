@@ -5,21 +5,23 @@ import com.intellij.ide.ReopenProjectAction
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor
 import com.intellij.ide.impl.OpenProjectTask
 import com.intellij.ide.impl.ProjectUtil
-import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.wm.impl.ProjectWindowAction
-import com.intellij.openapi.wm.impl.WindowDressing
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.wm.WindowManager
 import com.intellij.psi.codeStyle.MinusculeMatcher
 import com.intellij.psi.codeStyle.NameUtil
+import com.intellij.util.BitUtil.isSet
+import com.intellij.util.BitUtil.set
 import com.intellij.util.Processor
 import org.github.erikzielke.gotoproject.GoToProjectApplicationComponent
+import org.github.erikzielke.gotoproject.focus.projects
+import java.awt.Frame
 import java.nio.file.Path
 import java.nio.file.Paths
 import javax.swing.ListCellRenderer
 
-class GoToProjectSearchEverywhereContributor(
-    private val initEvent: AnActionEvent,
-) : SearchEverywhereContributor<Any> {
+class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> {
     override fun getSearchProviderId(): String = javaClass.simpleName
 
     override fun getGroupName() = "Projects"
@@ -40,9 +42,9 @@ class GoToProjectSearchEverywhereContributor(
         }
 
         val allRecentProjects = RecentProjectListActionProvider.getInstance().getActions(false)
-        val windowActions = WindowDressing.getWindowActionGroup().childActionsOrStubs
-        val openProjects = windowActions.filterIsInstance<ProjectWindowAction>()
-        val openProjectLocations = openProjects.map { it.projectLocation }.toSet()
+        ActionManager.getInstance().getAction("OpenProjectWindows")
+
+        val openProjectLocations = projects.map { it.basePath }
 
         val recentProjectsWithoutOpened: List<ReopenProjectAction> =
             allRecentProjects
@@ -50,7 +52,7 @@ class GoToProjectSearchEverywhereContributor(
                 .filter { it.projectPath !in openProjectLocations }
 
         val matcher = NameUtil.buildMatcher(pattern).build()
-        matcher(matcher, consumer, recentProjectsWithoutOpened, openProjects)
+        matcher(matcher, consumer, recentProjectsWithoutOpened, projects)
     }
 
     override fun processSelectedItem(
@@ -60,7 +62,7 @@ class GoToProjectSearchEverywhereContributor(
     ): Boolean =
         when (selected) {
             is ReopenProjectAction -> reopenProject(selected)
-            is ProjectWindowAction -> openSelectedProject(selected)
+            is Project -> focusOpeProject(selected)
             else -> false
         }
 
@@ -75,7 +77,7 @@ class GoToProjectSearchEverywhereContributor(
         matcher: MinusculeMatcher,
         consumer: Processor<in Any>,
         recentProjectsWithoutOpened: List<ReopenProjectAction>,
-        openProjects: List<ProjectWindowAction>,
+        openProjects: List<Project>,
     ) {
         for (project in recentProjectsWithoutOpened) {
             if (matcher.matches(project.projectName ?: "* Unknown *") && !consumer.process(project)) {
@@ -83,14 +85,20 @@ class GoToProjectSearchEverywhereContributor(
             }
         }
         for (window in openProjects) {
-            if (matcher.matches(window.projectName) && !consumer.process(window)) {
+            if (matcher.matches(window.name) && !consumer.process(window)) {
                 return
             }
         }
     }
 
-    private fun openSelectedProject(selected: ProjectWindowAction): Boolean {
-        selected.setSelected(initEvent, true)
+    fun focusOpeProject(project: Project): Boolean {
+        val projectFrame = WindowManager.getInstance().getFrame(project) ?: return true
+        val frameState = projectFrame.extendedState
+        if (isSet(frameState, Frame.ICONIFIED)) {
+            // restore the frame if it is minimized
+            projectFrame.setExtendedState(set(frameState, Frame.ICONIFIED, false))
+        }
+        projectFrame.toFront()
         return true
     }
 

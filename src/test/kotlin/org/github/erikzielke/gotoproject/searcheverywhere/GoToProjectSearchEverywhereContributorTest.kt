@@ -2,7 +2,7 @@ package org.github.erikzielke.gotoproject.searcheverywhere
 
 import com.intellij.ide.ReopenProjectAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.wm.impl.ProjectWindowAction
+import com.intellij.openapi.project.Project
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -23,7 +23,7 @@ class GoToProjectSearchEverywhereContributorTest : BasePlatformTestCase() {
     override fun setUp() {
         super.setUp()
         mockEvent = mock()
-        contributor = GoToProjectSearchEverywhereContributor(mockEvent)
+        contributor = GoToProjectSearchEverywhereContributor()
     }
 
     fun testGetSearchProviderId() {
@@ -49,7 +49,7 @@ class GoToProjectSearchEverywhereContributorTest : BasePlatformTestCase() {
         assertTrue(contributor.processSelectedItem(reopenAction, 0, "test"))
 
         // Test with ProjectWindowAction
-        val projectWindowAction = mock<ProjectWindowAction>()
+        val projectWindowAction = mock<Project>()
         assertTrue(contributor.processSelectedItem(projectWindowAction, 0, "test"))
     }
 

@@ -2,8 +2,8 @@ package org.github.erikzielke.gotoproject.searcheverywhere
 
 import com.intellij.ide.ReopenProjectAction
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.wm.impl.ProjectWindowAction
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.ui.ColoredListCellRenderer
 import org.mockito.kotlin.mock
@@ -113,11 +113,11 @@ class GoToProjectProjectListCellRendererTest : BasePlatformTestCase() {
     fun testCustomizeNonPsiElementLeftRendererReturnsTrueForProjectWindowAction() {
         val mockRenderer = mock<ColoredListCellRenderer<Any>>()
         val mockList = mock<JList<Any>>()
-        val projectWindowAction = mock<ProjectWindowAction>()
+        val projectWindowAction = mock<Project>()
 
         // Set up the mock ProjectWindowAction
-        whenever(projectWindowAction.projectName).thenReturn("Test Project")
-        whenever(projectWindowAction.projectLocation).thenReturn("/path/to/project")
+        whenever(projectWindowAction.name).thenReturn("Test Project")
+        whenever(projectWindowAction.basePath).thenReturn("/path/to/project")
 
         // Configure the mock list to return a foreground color
         whenever(mockList.foreground).thenReturn(java.awt.Color.BLACK)
