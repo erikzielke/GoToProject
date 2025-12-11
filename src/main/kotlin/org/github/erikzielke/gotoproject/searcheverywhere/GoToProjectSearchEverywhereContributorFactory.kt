@@ -5,6 +5,5 @@ import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributorFact
 import com.intellij.openapi.actionSystem.AnActionEvent
 
 class GoToProjectSearchEverywhereContributorFactory : SearchEverywhereContributorFactory<Any> {
-    override fun createContributor(initEvent: AnActionEvent): SearchEverywhereContributor<Any> =
-        GoToProjectSearchEverywhereContributor()
+    override fun createContributor(initEvent: AnActionEvent): SearchEverywhereContributor<Any> = GoToProjectSearchEverywhereContributor()
 }
