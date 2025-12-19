@@ -6,7 +6,6 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfoRt
-import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil.isSet
 import com.intellij.util.BitUtil.set
@@ -46,11 +45,5 @@ internal class GoToProjectWindowAction(
         }
 
         projectFrame.toFront()
-        IdeFocusManager.getGlobalInstance().doWhenFocusSettlesDown {
-            val mostRecentFocusOwner = projectFrame.mostRecentFocusOwner
-            if (mostRecentFocusOwner != null) {
-                IdeFocusManager.getGlobalInstance().requestFocus(mostRecentFocusOwner, true)
-            }
-        }
     }
 }
