@@ -9,9 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.SPEEDSEARCH
-import com.intellij.openapi.wm.impl.ProjectWindowAction
 import org.github.erikzielke.gotoproject.GoToProjectApplicationComponent.Companion.instance
-import kotlin.io.path.Path
 
 /**
  * This action adds an action to navigate to open projects.
@@ -69,7 +67,7 @@ class GoToProject : AnAction() {
                 projectPaths.add(projectPath)
 
                 // Create and add action for this project
-                val action = ProjectWindowAction(project.name, Path(projectPath), null)
+                val action = GoToProjectWindowAction(project)
                 actionGroup.add(action)
             }
         }

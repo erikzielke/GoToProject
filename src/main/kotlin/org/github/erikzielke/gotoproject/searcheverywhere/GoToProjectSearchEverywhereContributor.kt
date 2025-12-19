@@ -5,7 +5,6 @@ import com.intellij.ide.ReopenProjectAction
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor
 import com.intellij.ide.impl.OpenProjectTask
 import com.intellij.ide.impl.ProjectUtil
-import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.WindowManager
@@ -42,7 +41,6 @@ class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> 
         }
 
         val allRecentProjects = RecentProjectListActionProvider.getInstance().getActions(false)
-        ActionManager.getInstance().getAction("OpenProjectWindows")
 
         val openProjectLocations = projects.map { it.basePath }
 
