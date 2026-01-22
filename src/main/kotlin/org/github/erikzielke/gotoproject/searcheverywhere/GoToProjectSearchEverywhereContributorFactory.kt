@@ -6,6 +6,5 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 
 @Suppress("MaxLineLength")
 class GoToProjectSearchEverywhereContributorFactory : SearchEverywhereContributorFactory<Any> {
-    override fun createContributor(initEvent: AnActionEvent): SearchEverywhereContributor<Any> =
-        GoToProjectSearchEverywhereContributor()
+    override fun createContributor(initEvent: AnActionEvent): SearchEverywhereContributor<Any> = GoToProjectSearchEverywhereContributor()
 }
