@@ -29,14 +29,16 @@ class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> 
 
     override fun showInFindResults() = false
 
-    override fun isShownInSeparateTab() = GoToProjectApplicationComponent.instance.state.panelInSearchEverywhere
+    override fun isShownInSeparateTab() = GoToProjectApplicationComponent.instance.state.showTabInSearchEverywhere
+
+    override fun isEmptyPatternSupported() = true
 
     override fun fetchElements(
         pattern: String,
         progressIndicator: ProgressIndicator,
         consumer: Processor<in Any>,
     ) {
-        if (!GoToProjectApplicationComponent.instance.state.panelInSearchEverywhere) {
+        if (!GoToProjectApplicationComponent.instance.state.showTabInSearchEverywhere) {
             return
         }
 

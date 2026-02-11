@@ -44,7 +44,6 @@ class GoToProjectTest : BasePlatformTestCase() {
         val addRecentProjectsMethod =
             GoToProject::class.java.getDeclaredMethod(
                 "addRecentProjects",
-                GoToProjectApplicationComponent::class.java,
                 Set::class.java,
                 DefaultActionGroup::class.java,
             )

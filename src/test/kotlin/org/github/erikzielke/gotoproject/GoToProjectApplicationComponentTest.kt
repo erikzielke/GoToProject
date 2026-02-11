@@ -19,7 +19,8 @@ class GoToProjectApplicationComponentTest {
 
         // Assert
         assertFalse(state.isIncludeRecent)
-        assertFalse(state.panelInSearchEverywhere)
+        assertFalse(state.showTabInSearchEverywhere)
+        assertFalse(state.openTabInSearchEverywhere)
     }
 
     @Test
@@ -28,7 +29,8 @@ class GoToProjectApplicationComponentTest {
         val component = GoToProjectApplicationComponent()
         val newState = GoToProjectWindowSettings()
         newState.isIncludeRecent = true
-        newState.panelInSearchEverywhere = true
+        newState.showTabInSearchEverywhere = true
+        newState.openTabInSearchEverywhere = true
 
         // Act
         component.loadState(newState)
@@ -36,7 +38,8 @@ class GoToProjectApplicationComponentTest {
         // Assert
         val currentState = component.state
         assertEquals(true, currentState.isIncludeRecent)
-        assertEquals(true, currentState.panelInSearchEverywhere)
+        assertEquals(true, currentState.showTabInSearchEverywhere)
+        assertEquals(true, currentState.openTabInSearchEverywhere)
     }
 
     @Test
