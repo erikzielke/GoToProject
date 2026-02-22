@@ -15,12 +15,21 @@ class GoToProjectWindowSettingsTest {
     }
 
     @Test
-    fun `default settings should have panelInSearchEverywhere set to false`() {
+    fun `default settings should have showTabInSearchEverywhere set to false`() {
         // Arrange
         val settings = GoToProjectWindowSettings()
 
         // Act & Assert
-        assertFalse(settings.panelInSearchEverywhere)
+        assertFalse(settings.showTabInSearchEverywhere)
+    }
+
+    @Test
+    fun `default settings should have openTabInSearchEverywhere set to false`() {
+        // Arrange
+        val settings = GoToProjectWindowSettings()
+
+        // Act & Assert
+        assertFalse(settings.openTabInSearchEverywhere)
     }
 
     @Test
@@ -30,10 +39,12 @@ class GoToProjectWindowSettingsTest {
 
         // Act
         settings.isIncludeRecent = true
-        settings.panelInSearchEverywhere = true
+        settings.showTabInSearchEverywhere = true
+        settings.openTabInSearchEverywhere = true
 
         // Assert
         assertTrue(settings.isIncludeRecent)
-        assertTrue(settings.panelInSearchEverywhere)
+        assertTrue(settings.showTabInSearchEverywhere)
+        assertTrue(settings.openTabInSearchEverywhere)
     }
 }

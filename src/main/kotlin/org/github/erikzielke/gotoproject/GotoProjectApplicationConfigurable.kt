@@ -28,7 +28,10 @@ class GotoProjectApplicationConfigurable : Configurable {
                 checkBox("Include recently opened projects").bindSelected(state::isIncludeRecent)
             }
             row {
-                checkBox("Panel in search everywhere").bindSelected(state::panelInSearchEverywhere)
+                checkBox("Show 'Projects' tab in search everywhere").bindSelected(state::showTabInSearchEverywhere)
+            }
+            row {
+                checkBox("'Go to Project' action opens 'Projects' tab in search everywhere").bindSelected(state::openTabInSearchEverywhere)
             }
         }
 

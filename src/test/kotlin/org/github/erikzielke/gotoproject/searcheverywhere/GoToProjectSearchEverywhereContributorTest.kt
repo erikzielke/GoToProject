@@ -42,6 +42,10 @@ class GoToProjectSearchEverywhereContributorTest : BasePlatformTestCase() {
         assertFalse(contributor.showInFindResults())
     }
 
+    fun testIsEmptyPatternSupported() {
+        assertTrue(contributor.isEmptyPatternSupported())
+    }
+
     fun testProcessSelectedItemReturnsTrue() {
         // Test with ReopenProjectAction
         val reopenAction = mock<ReopenProjectAction>()

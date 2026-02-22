@@ -2,7 +2,8 @@ package org.github.erikzielke.gotoproject
 
 import com.intellij.ide.RecentProjectListActionProvider
 import com.intellij.ide.ReopenProjectAction
-import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.ide.actions.SearchEverywhereBaseAction
+import com.intellij.ide.actions.searcheverywhere.statistics.SearchFieldStatisticsCollector
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
@@ -10,21 +11,29 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.SPEEDSEARCH
 import org.github.erikzielke.gotoproject.GoToProjectApplicationComponent.Companion.instance
+import org.github.erikzielke.gotoproject.searcheverywhere.GoToProjectSearchEverywhereContributor
 
 /**
  * This action adds an action to navigate to open projects.
  */
-class GoToProject : AnAction() {
+class GoToProject : SearchEverywhereBaseAction() {
     /**
      * Finds the open project window actions available and shows them in a speed-search-enabled popup.
      *
      * @param event the action event.
      */
     override fun actionPerformed(event: AnActionEvent) {
-        val actionGroup = DefaultActionGroup()
-        val openProjects = addOpenProjects(actionGroup)
-        addRecentProjects(instance, openProjects, actionGroup)
-        showPopup(actionGroup, event)
+        var event = SearchFieldStatisticsCollector.wrapEventWithActionStartData(event)
+
+        if (instance.state.openTabInSearchEverywhere) {
+            val tabID = GoToProjectSearchEverywhereContributor::class.java.getSimpleName()
+            showInSearchEverywherePopup(tabID, event, true, true)
+        } else {
+            val actionGroup = DefaultActionGroup()
+            val openProjects = addOpenProjects(actionGroup)
+            addRecentProjects(openProjects, actionGroup)
+            showPopup(actionGroup, event)
+        }
     }
 
     private fun showPopup(
@@ -81,7 +90,6 @@ class GoToProject : AnAction() {
         }
 
     private fun addRecentProjects(
-        instance: GoToProjectApplicationComponent,
         openProjects: Set<String>,
         actionGroup: DefaultActionGroup,
     ) {
