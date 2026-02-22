@@ -53,8 +53,11 @@ tasks {
     patchPluginXml {
         changeNotes.set(
             """
-            Converted to Kotlin<br>
-            Projects available in Search Everywhere
+                Thanks to https://github.com/ChrisCarini : 
+                <ul>
+                    <li>Added option for showing 'Projects' tab in search everywhere and opening it by default when using 'Go to Project' action.</li>
+                    <li>Disabling Go to Last Project action if no project available.</li>
+                </ul>
             """.trimIndent(),
         )
     }

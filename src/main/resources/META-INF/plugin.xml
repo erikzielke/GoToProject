@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.github.erikzielke.gotoproject</id>
     <name>Go To Project</name>
-    <version>1.3.0</version>
+    <version>1.4.0</version>
     <vendor email="erikzielke@hotmail.com">Erik Zielke</vendor>
 
     <resource-bundle>messages</resource-bundle>
@@ -16,10 +16,10 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="GoToProject" class="org.github.erikzielke.gotoproject.GoToProject" >
+        <action id="GoToProject" class="org.github.erikzielke.gotoproject.GoToProject">
             <add-to-group group-id="OpenProjectWindows" anchor="last"/>
         </action>
-        <action id="GoToLastProject" class="org.github.erikzielke.gotoproject.GoToLastProject" >
+        <action id="GoToLastProject" class="org.github.erikzielke.gotoproject.GoToLastProject">
             <add-to-group group-id="OpenProjectWindows" anchor="last"/>
         </action>
     </actions>
