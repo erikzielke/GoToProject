@@ -31,7 +31,8 @@ class GotoProjectApplicationConfigurable : Configurable {
                 checkBox("Show 'Projects' tab in search everywhere").bindSelected(state::showTabInSearchEverywhere)
             }
             row {
-                checkBox("'Go to Project' action opens 'Projects' tab in search everywhere").bindSelected(state::openTabInSearchEverywhere)
+                checkBox("'Go to Project' action opens 'Projects' tab in search everywhere")
+                    .bindSelected(state::openTabInSearchEverywhere)
             }
         }
 
