@@ -10,7 +10,7 @@ buildscript {
     }
 }
 plugins {
-    id("org.jetbrains.intellij.platform") version "2.10.5"
+    id("org.jetbrains.intellij.platform") version "2.11.0"
     id("com.github.gradle-git-version-calculator") version "1.1.0"
     id("org.jetbrains.kotlin.jvm") version "2.3.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
