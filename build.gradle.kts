@@ -53,11 +53,11 @@ tasks {
     patchPluginXml {
         changeNotes.set(
             """
-                Thanks to https://github.com/ChrisCarini : 
-                <ul>
-                    <li>Added option for showing 'Projects' tab in search everywhere and opening it by default when using 'Go to Project' action.</li>
-                    <li>Disabling Go to Last Project action if no project available.</li>
-                </ul>
+            Thanks to https://github.com/ChrisCarini :
+            <ul>
+                <li>Added option for showing 'Projects' tab in search everywhere and opening it by default when using 'Go to Project' action.</li>
+                <li>Disabling Go to Last Project action if no project available.</li>
+            </ul>
             """.trimIndent(),
         )
     }
