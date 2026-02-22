@@ -36,7 +36,9 @@ class GoToProjectProjectListCellRenderer(
                     true
                 }
 
-                else -> false
+                else -> {
+                    false
+                }
             }
         return result
     }
