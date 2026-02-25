@@ -3,7 +3,6 @@ package org.github.erikzielke.gotoproject
 import com.intellij.ide.RecentProjectListActionProvider
 import com.intellij.ide.ReopenProjectAction
 import com.intellij.ide.actions.SearchEverywhereBaseAction
-import com.intellij.ide.actions.searcheverywhere.statistics.SearchFieldStatisticsCollector
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
@@ -23,8 +22,6 @@ class GoToProject : SearchEverywhereBaseAction() {
      * @param event the action event.
      */
     override fun actionPerformed(event: AnActionEvent) {
-        var event = SearchFieldStatisticsCollector.wrapEventWithActionStartData(event)
-
         if (instance.state.openTabInSearchEverywhere) {
             val tabID = GoToProjectSearchEverywhereContributor::class.java.getSimpleName()
             showInSearchEverywherePopup(tabID, event, true, true)
