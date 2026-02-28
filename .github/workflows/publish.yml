@@ -16,35 +16,33 @@ on:
         default: 'alpha'
         # Input has to be provided for the workflow to run
         required: false
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+
 jobs:
-  # This workflow contains a single job called "greet"
   publish:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    env:
-        PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-        PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
-        CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
-        CHANNEL: ${{ github.event.inputs.name }}
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      
       - name: Git Semantic Version
         uses: PaulHatch/semantic-version@v4.0.3
+      
       - name: 'env'
         run: |
            env
-      - name: 'Show selected channel'
-        run: |
-          echo "Publishing to channel: $PUBLISH_CHANNEL"
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+
       - uses: actions/setup-java@v1
         with:
           java-version: 21
-      - uses: gradle/gradle-build-action@v2
+      
+      - name: "Publishing to channel: ${{ github.event.inputs.name }}"
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: publishPlugin
+        env:
+            PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+            PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+            PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+            CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+            CHANNEL: ${{ github.event.inputs.name }}
