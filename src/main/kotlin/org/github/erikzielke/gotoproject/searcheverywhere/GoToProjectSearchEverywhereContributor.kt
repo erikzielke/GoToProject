@@ -88,6 +88,7 @@ class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> 
             if (matcher.matchingFragments(window.name) != null && !consumer.process(window)) {
                 return
             }
+        }
     }
 
     fun focusOpeProject(project: Project): Boolean {
