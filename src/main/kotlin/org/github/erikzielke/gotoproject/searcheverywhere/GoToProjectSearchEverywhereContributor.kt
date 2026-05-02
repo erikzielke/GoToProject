@@ -80,15 +80,14 @@ class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> 
         openProjects: List<Project>,
     ) {
         for (project in recentProjectsWithoutOpened) {
-            if (matcher.matches(project.projectName ?: "* Unknown *") && !consumer.process(project)) {
+            if (matcher.matchingFragments(project.projectName ?: "* Unknown *") != null && !consumer.process(project)) {
                 return
             }
         }
         for (window in openProjects) {
-            if (matcher.matches(window.name) && !consumer.process(window)) {
+            if (matcher.matchingFragments(window.name) != null && !consumer.process(window)) {
                 return
             }
-        }
     }
 
     fun focusOpeProject(project: Project): Boolean {
