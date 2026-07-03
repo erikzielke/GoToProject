@@ -51,7 +51,11 @@ class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> 
                 .map { it as ReopenProjectAction }
                 .filter { it.projectPath !in openProjectLocations }
 
-        val matcher = NameUtil.buildMatcher("*$pattern").withCaseSensitivity(NameUtil.MatchingCaseSensitivity.NONE).build()
+        val matcher =
+            NameUtil
+                .buildMatcher("*$pattern")
+                .withCaseSensitivity(NameUtil.MatchingCaseSensitivity.NONE)
+                .build()
         matcher(matcher, consumer, recentProjectsWithoutOpened, projects)
     }
 

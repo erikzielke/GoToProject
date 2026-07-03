@@ -6,7 +6,11 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 class GoToProjectMatchingTest : BasePlatformTestCase() {
     fun testFuzzyMatching() {
         val pattern = "mep"
-        val matcher = NameUtil.buildMatcher("*$pattern").withCaseSensitivity(NameUtil.MatchingCaseSensitivity.NONE).build()
+        val matcher =
+            NameUtil
+                .buildMatcher("*$pattern")
+                .withCaseSensitivity(NameUtil.MatchingCaseSensitivity.NONE)
+                .build()
 
         assertTrue(matcher.matches("my-example-project"))
         assertTrue(matcher.matches("MY-EXAMPLE-PROJECT"))
@@ -15,7 +19,11 @@ class GoToProjectMatchingTest : BasePlatformTestCase() {
 
     fun testFuzzyMatchingWithMiddleOfWord() {
         val pattern = "ject"
-        val matcher = NameUtil.buildMatcher("*$pattern").withCaseSensitivity(NameUtil.MatchingCaseSensitivity.NONE).build()
+        val matcher =
+            NameUtil
+                .buildMatcher("*$pattern")
+                .withCaseSensitivity(NameUtil.MatchingCaseSensitivity.NONE)
+                .build()
 
         assertTrue(matcher.matches("my-example-project"))
         assertTrue(matcher.matches("project"))
@@ -23,7 +31,11 @@ class GoToProjectMatchingTest : BasePlatformTestCase() {
 
     fun testFuzzyMatchingCaseInsensitive() {
         val pattern = "EXAMPLE"
-        val matcher = NameUtil.buildMatcher("*$pattern").withCaseSensitivity(NameUtil.MatchingCaseSensitivity.NONE).build()
+        val matcher =
+            NameUtil
+                .buildMatcher("*$pattern")
+                .withCaseSensitivity(NameUtil.MatchingCaseSensitivity.NONE)
+                .build()
 
         assertTrue(matcher.matches("my-example-project"))
     }
