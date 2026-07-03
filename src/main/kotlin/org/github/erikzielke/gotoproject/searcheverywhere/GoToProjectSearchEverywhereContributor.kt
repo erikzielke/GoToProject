@@ -51,7 +51,7 @@ class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> 
                 .map { it as ReopenProjectAction }
                 .filter { it.projectPath !in openProjectLocations }
 
-        val matcher = NameUtil.buildMatcher(pattern).build()
+        val matcher = NameUtil.buildMatcher("*$pattern").withCaseSensitivity(NameUtil.MatchingCaseSensitivity.NONE).build()
         matcher(matcher, consumer, recentProjectsWithoutOpened, projects)
     }
 
@@ -80,12 +80,12 @@ class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> 
         openProjects: List<Project>,
     ) {
         for (project in recentProjectsWithoutOpened) {
-            if (matcher.matchingFragments(project.projectName ?: "* Unknown *") != null && !consumer.process(project)) {
+            if (matcher.matches(project.projectName ?: "* Unknown *") && !consumer.process(project)) {
                 return
             }
         }
         for (window in openProjects) {
-            if (matcher.matchingFragments(window.name) != null && !consumer.process(window)) {
+            if (matcher.matches(window.name) && !consumer.process(window)) {
                 return
             }
         }
