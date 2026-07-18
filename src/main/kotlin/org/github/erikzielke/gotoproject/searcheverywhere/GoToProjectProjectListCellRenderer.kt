@@ -9,6 +9,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.JBColor
 import com.intellij.ui.SimpleTextAttributes
+import org.github.erikzielke.gotoproject.git.GitBranchResolver
 import javax.swing.JList
 
 class GoToProjectProjectListCellRenderer(
@@ -66,6 +67,7 @@ class GoToProjectProjectListCellRenderer(
         renderer: ColoredListCellRenderer<*>,
     ) {
         appendName(list, renderer, projectName)
+        appendBranch(projectLocation, renderer)
         appendLocation(projectLocation, renderer)
         val projectOrAppIcon = RecentProjectsManagerBase.getInstanceEx().getProjectIcon(projectLocation, true)
         renderer.icon = projectOrAppIcon
@@ -79,6 +81,17 @@ class GoToProjectProjectListCellRenderer(
         val color = list.foreground
         val nameAttributes = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, color)
         renderer.append("$projectName ", nameAttributes)
+    }
+
+    private fun appendBranch(
+        projectLocation: String,
+        renderer: ColoredListCellRenderer<*>,
+    ) {
+        val branchInfo = GitBranchResolver.resolve(projectLocation) ?: return
+        val suffix = if (branchInfo.isWorktree) " (worktree)" else ""
+        val branchColor = JBColor.namedColor("Label.infoForeground", JBColor.GRAY)
+        val branchAttributes = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, branchColor)
+        renderer.append("[${branchInfo.branchName}]$suffix ", branchAttributes)
     }
 
     private fun appendLocation(

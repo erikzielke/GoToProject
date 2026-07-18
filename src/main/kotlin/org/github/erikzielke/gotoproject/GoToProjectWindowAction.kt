@@ -9,6 +9,7 @@ import com.intellij.openapi.util.SystemInfoRt
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil.isSet
 import com.intellij.util.BitUtil.set
+import org.github.erikzielke.gotoproject.git.GitBranchResolver
 import java.awt.Frame
 import java.awt.event.KeyEvent
 
@@ -18,7 +19,7 @@ internal class GoToProjectWindowAction(
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     init {
-        templatePresentation.setText(project.name, false)
+        templatePresentation.setText(Util.displayText(project), false)
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
@@ -45,5 +46,13 @@ internal class GoToProjectWindowAction(
         }
 
         projectFrame.toFront()
+    }
+
+    object Util {
+        fun displayText(project: Project): String {
+            val branchInfo = GitBranchResolver.resolve(project.basePath) ?: return project.name
+            val worktreeSuffix = if (branchInfo.isWorktree) " (worktree)" else ""
+            return "${project.name} [${branchInfo.branchName}]$worktreeSuffix"
+        }
     }
 }

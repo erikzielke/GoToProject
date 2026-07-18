@@ -102,7 +102,7 @@ class GoToProject : SearchEverywhereBaseAction() {
             )
         val recentProjectsWithoutOpened =
             allRecentProjects.map { it as ReopenProjectAction }.filter { it.projectPath !in openProjects }
-        actionGroup.addAll(recentProjectsWithoutOpened)
+        actionGroup.addAll(recentProjectsWithoutOpened.map(::GoToRecentProjectAction))
     }
 
     override fun isDumbAware() = true
