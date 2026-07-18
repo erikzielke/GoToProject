@@ -31,22 +31,22 @@ jobs:
           distribution: 'temurin'
           java-version: 21
       - name: Check code formatting
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v6
         with:
           arguments: spotlessCheck
 
       - name: Run Detekt analysis
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v6
         with:
           arguments: detektAll
 
       - name: Build
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v6
         with:
           arguments: build
 
       - name: Generate Kover reports
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v6
         with:
           arguments: koverBinaryReport koverHtmlReport koverXmlReport
 
