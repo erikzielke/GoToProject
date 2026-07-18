@@ -55,5 +55,4 @@ internal class GoToProjectWindowAction(
             return "${project.name} [${branchInfo.branchName}]$worktreeSuffix"
         }
     }
-
 }
