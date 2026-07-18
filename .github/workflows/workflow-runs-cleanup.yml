@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Cleanup Workflow Runs
-        uses: actions/github-script@v6
+        uses: actions/github-script@v9
         with:
           script: |
             let daysOld;
