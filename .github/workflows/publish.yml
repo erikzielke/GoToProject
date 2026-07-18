@@ -34,7 +34,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Git Semantic Version
-        uses: PaulHatch/semantic-version@v4.0.3
+        uses: PaulHatch/semantic-version@v6.0.3
       - name: 'env'
         run: |
            env
