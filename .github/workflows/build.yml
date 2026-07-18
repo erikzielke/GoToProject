@@ -30,25 +30,20 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 21
-      - name: Check code formatting
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
-        with:
-          arguments: spotlessCheck
+
+      - name: Check code formatting
+        run: ./gradlew spotlessCheck
 
       - name: Run Detekt analysis
-        uses: gradle/actions/setup-gradle@v6
-        with:
-          arguments: detektAll
+        run: ./gradlew detektAll
 
       - name: Build
-        uses: gradle/actions/setup-gradle@v6
-        with:
-          arguments: build
+        run: ./gradlew build
 
       - name: Generate Kover reports
-        uses: gradle/actions/setup-gradle@v6
-        with:
-          arguments: koverBinaryReport koverHtmlReport koverXmlReport
+        run: ./gradlew koverBinaryReport koverHtmlReport koverXmlReport
 
       # Upload JUnit test reports as artifacts
       - name: Upload JUnit test reports
