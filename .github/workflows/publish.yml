@@ -42,8 +42,9 @@ jobs:
         run: |
           echo "Publishing to channel: $PUBLISH_CHANNEL"
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v5
         with:
+          distribution: 'temurin'
           java-version: 21
       - uses: gradle/gradle-build-action@v3
         with:
