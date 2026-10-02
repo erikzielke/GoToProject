@@ -3,8 +3,11 @@ package org.github.erikzielke.gotoproject.searcheverywhere
 import com.intellij.ide.RecentProjectListActionProvider
 import com.intellij.ide.ReopenProjectAction
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor
-import com.intellij.ide.impl.OpenProjectTask
-import com.intellij.ide.impl.ProjectUtil
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionUiKind
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.WindowManager
@@ -16,11 +19,11 @@ import com.intellij.util.Processor
 import org.github.erikzielke.gotoproject.GoToProjectApplicationComponent
 import org.github.erikzielke.gotoproject.focus.projects
 import java.awt.Frame
-import java.nio.file.Path
-import java.nio.file.Paths
 import javax.swing.ListCellRenderer
 
-class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> {
+class GoToProjectSearchEverywhereContributor(
+    private val project: Project? = null,
+) : SearchEverywhereContributor<Any> {
     override fun getSearchProviderId(): String = javaClass.simpleName
 
     override fun getGroupName() = "Projects"
@@ -106,10 +109,20 @@ class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> 
         return true
     }
 
+    /**
+     * Reopens the project the same way the IDE's own Recent Projects list does, by delegating to [ReopenProjectAction].
+     */
     private fun reopenProject(selected: ReopenProjectAction): Boolean {
-        val file: Path = Paths.get(selected.projectPath).normalize()
-        val openProjectTask = OpenProjectTask.build().withProjectToClose(null)
-        ProjectUtil.openOrImport(file, openProjectTask)
+        val dataContext = project?.let { SimpleDataContext.getProjectContext(it) } ?: DataContext.EMPTY_CONTEXT
+        val event =
+            AnActionEvent.createEvent(
+                dataContext,
+                null,
+                ActionPlaces.UNKNOWN,
+                ActionUiKind.SEARCH_POPUP,
+                null,
+            )
+        selected.actionPerformed(event)
         return true
     }
 }
