@@ -7,6 +7,7 @@ import javax.swing.JCheckBox
 /**
  * Tests for GotoProjectApplicationConfigurable
  */
+@Suppress("TooManyFunctions")
 class GotoProjectApplicationConfigurableTest : BasePlatformTestCase() {
     private lateinit var configurable: GotoProjectApplicationConfigurable
     private lateinit var originalState: GoToProjectWindowSettings
