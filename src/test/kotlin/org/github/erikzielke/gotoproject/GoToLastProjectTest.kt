@@ -1,5 +1,6 @@
 package org.github.erikzielke.gotoproject
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -91,5 +92,39 @@ class GoToLastProjectTest : BasePlatformTestCase() {
 
         // Clean up
         GoToProjectApplicationComponent.instance.focusedBefore = null
+    }
+
+    /**
+     * Test that the action updates on a background thread
+     */
+    fun testActionUpdateThreadIsBackground() {
+        assertEquals(ActionUpdateThread.BGT, GoToLastProject().actionUpdateThread)
+    }
+
+    /**
+     * Test that actionPerformed does nothing when there is no previously focused project
+     */
+    fun testActionPerformedDoesNothingWhenFocusedBeforeIsNull() {
+        GoToProjectApplicationComponent.instance.focusedBefore = null
+
+        GoToLastProject().actionPerformed(mock(AnActionEvent::class.java))
+
+        assertNull(GoToProjectApplicationComponent.instance.focusedBefore)
+    }
+
+    /**
+     * Test that actionPerformed keeps the previously focused project when it has no frame
+     */
+    fun testActionPerformedWithFocusedBeforeWithoutFrame() {
+        GoToProjectApplicationComponent.instance.focusedBefore = project
+
+        try {
+            // In the headless test environment the project has no frame, so this must not throw.
+            GoToLastProject().actionPerformed(mock(AnActionEvent::class.java))
+
+            assertSame(project, GoToProjectApplicationComponent.instance.focusedBefore)
+        } finally {
+            GoToProjectApplicationComponent.instance.focusedBefore = null
+        }
     }
 }
