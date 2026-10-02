@@ -101,7 +101,7 @@ class GoToProject : SearchEverywhereBaseAction() {
                 allowCustomProjectActions = false,
             )
         val recentProjectsWithoutOpened =
-            allRecentProjects.map { it as ReopenProjectAction }.filter { it.projectPath !in openProjects }
+            allRecentProjects.filterIsInstance<ReopenProjectAction>().filter { it.projectPath !in openProjects }
         actionGroup.addAll(recentProjectsWithoutOpened.map(::GoToRecentProjectAction))
     }
 

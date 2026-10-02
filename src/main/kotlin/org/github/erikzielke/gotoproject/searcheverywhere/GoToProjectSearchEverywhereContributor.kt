@@ -48,7 +48,7 @@ class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> 
 
         val recentProjectsWithoutOpened: List<ReopenProjectAction> =
             allRecentProjects
-                .map { it as ReopenProjectAction }
+                .filterIsInstance<ReopenProjectAction>()
                 .filter { it.projectPath !in openProjectLocations }
 
         val matcher =
