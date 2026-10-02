@@ -16,6 +16,7 @@ import kotlin.io.path.writeText
 /**
  * Tests for GoToProjectWindowAction
  */
+@Suppress("TooManyFunctions")
 class GoToProjectWindowActionTest : BasePlatformTestCase() {
     fun testDisplayTextIsProjectNameWhenNotAGitRepository() {
         val projectDir = createTempDir("window-action-no-git")
