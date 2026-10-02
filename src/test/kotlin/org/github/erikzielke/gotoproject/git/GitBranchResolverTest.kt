@@ -10,6 +10,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@Suppress("TooManyFunctions")
 class GitBranchResolverTest {
     @Test
     fun `returns null for a directory that is not a git repository`() {
