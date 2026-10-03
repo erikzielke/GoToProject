@@ -1,3 +1,6 @@
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.intellij.platform.gradle.models.ProductRelease
+import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 buildscript {
@@ -35,11 +38,35 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        intellijIdea("2025.3")
+        intellijIdea(providers.gradleProperty("platformVersion"))
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
+        pluginVerifier()
     }
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.4.0")
+}
+
+// Oldest supported IntelliJ build. Pinned so that building against a newer platformVersion doesn't raise it.
+// No until-build: the plugin stays installable on new IDE releases, which verifyPlugin checks weekly in CI.
+val supportedSinceBuild = "253"
+
+intellijPlatform {
+    pluginConfiguration {
+        ideaVersion {
+            sinceBuild = supportedSinceBuild
+        }
+    }
+    pluginVerification {
+        ides {
+            // Every released IntelliJ IDEA from the oldest supported build onwards, newest patch of each major version.
+            select {
+                types = listOf(IntelliJPlatformType.IntellijIdea)
+                channels = listOf(ProductRelease.Channel.RELEASE)
+                sinceBuild = supportedSinceBuild
+            }
+        }
+        failureLevel = listOf(FailureLevel.COMPATIBILITY_PROBLEMS, FailureLevel.INVALID_PLUGIN)
+    }
 }
 
 tasks {

@@ -12,6 +12,11 @@ on:
   pull_request:
     branches: [ master ]
 
+  # Weekly run so new IntelliJ releases get verified even when nothing is pushed
+  # (the plugin declares no until-build, so new releases treat it as compatible)
+  schedule:
+    - cron: '17 6 * * 1'
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -70,4 +75,58 @@ jobs:
         with:
           name: detekt-analysis-reports
           path: build/reports/detekt
+          retention-days: 7
+
+  # Runs the test suite against newer IntelliJ IDEA releases (the build job covers the oldest supported one)
+  test-platforms:
+    name: Test on IntelliJ IDEA ${{ matrix.platform-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform-version: [ '2026.1', '2026.2' ]
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5.7.0
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6.3.0
+
+      - name: Test
+        run: ./gradlew test -PplatformVersion=${{ matrix.platform-version }}
+
+      - name: Upload JUnit test reports
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: junit-test-reports-${{ matrix.platform-version }}
+          path: build/reports/tests/test
+          retention-days: 7
+
+  # Checks the built plugin for binary compatibility with every IntelliJ IDEA release it claims to support
+  verify-plugin:
+    name: Verify plugin compatibility
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5.7.0
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6.3.0
+
+      - name: Run Plugin Verifier
+        run: ./gradlew verifyPlugin
+
+      - name: Upload Plugin Verifier reports
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: plugin-verifier-reports
+          path: build/reports/pluginVerifier
           retention-days: 7
