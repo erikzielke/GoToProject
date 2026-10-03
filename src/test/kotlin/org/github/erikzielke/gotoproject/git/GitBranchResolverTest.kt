@@ -10,6 +10,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@Suppress("TooManyFunctions")
 class GitBranchResolverTest {
     @Test
     fun `returns null for a directory that is not a git repository`() {
@@ -76,6 +77,87 @@ class GitBranchResolverTest {
         val result = GitBranchResolver.resolve(subDir.toString())
 
         assertEquals("main", result?.branchName)
+    }
+
+    @Test
+    fun `keeps full ref when HEAD points outside refs heads`() {
+        val projectDir = createTempDir("non-heads-ref")
+        val gitDir = (projectDir / ".git").createDirectories()
+        (gitDir / "HEAD").writeText("ref: refs/remotes/origin/main\n")
+
+        val result = GitBranchResolver.resolve(projectDir.toString())
+
+        assertEquals("refs/remotes/origin/main", result?.branchName)
+    }
+
+    @Test
+    fun `returns null when HEAD file is empty`() {
+        val projectDir = createTempDir("empty-head")
+        val gitDir = (projectDir / ".git").createDirectories()
+        (gitDir / "HEAD").writeText("\n")
+
+        val result = GitBranchResolver.resolve(projectDir.toString())
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `returns null when git directory has no HEAD file`() {
+        val projectDir = createTempDir("missing-head")
+        (projectDir / ".git").createDirectories()
+
+        val result = GitBranchResolver.resolve(projectDir.toString())
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `returns null when git file does not start with gitdir prefix`() {
+        val projectDir = createTempDir("invalid-git-file")
+        (projectDir / ".git").writeText("this is not a git file\n")
+
+        val result = GitBranchResolver.resolve(projectDir.toString())
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `returns null when git file points to a missing directory`() {
+        val projectDir = createTempDir("dangling-git-file")
+        (projectDir / ".git").writeText("gitdir: ${projectDir / "does-not-exist"}\n")
+
+        val result = GitBranchResolver.resolve(projectDir.toString())
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `resolves git file with a relative gitdir path`() {
+        val root = createTempDir("relative-gitdir")
+        val worktreeGitDir = (root / "main" / ".git" / "worktrees" / "wt").createDirectories()
+        (worktreeGitDir / "HEAD").writeText("ref: refs/heads/relative-branch\n")
+        val worktreeDir = (root / "wt").createDirectories()
+        (worktreeDir / ".git").writeText("gitdir: ../main/.git/worktrees/wt\n")
+
+        val result = GitBranchResolver.resolve(worktreeDir.toString())
+
+        assertEquals("relative-branch", result?.branchName)
+        assertTrue(result?.isWorktree == true)
+    }
+
+    @Test
+    fun `returns cached result within the cache ttl`() {
+        val projectDir = createTempDir("cached-repo")
+        val gitDir = (projectDir / ".git").createDirectories()
+        val headFile = gitDir / "HEAD"
+        headFile.writeText("ref: refs/heads/first\n")
+
+        val first = GitBranchResolver.resolve(projectDir.toString())
+        headFile.writeText("ref: refs/heads/second\n")
+        val second = GitBranchResolver.resolve(projectDir.toString())
+
+        assertEquals("first", first?.branchName)
+        assertEquals(first, second)
     }
 
     private fun createTempDir(prefix: String): Path =
