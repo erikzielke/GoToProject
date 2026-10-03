@@ -53,6 +53,24 @@ To automatically fix formatting issues:
 ./gradlew spotlessApply
 ```
 
+#### Compatibility with IntelliJ Versions
+
+The plugin supports IntelliJ IDEA 2025.3 (build 253) and later. It is built against the version in `platformVersion` in `gradle.properties`, and the supported floor is pinned by `sinceBuild` in `build.gradle.kts`.
+
+To run the tests against another IntelliJ IDEA release:
+
+```bash
+./gradlew test -PplatformVersion=2026.2
+```
+
+To check the built plugin for binary compatibility with every IntelliJ IDEA release from the supported floor onwards, using the [IntelliJ Plugin Verifier](https://github.com/JetBrains/intellij-plugin-verifier):
+
+```bash
+./gradlew verifyPlugin
+```
+
+Reports are generated in `build/reports/pluginVerifier/`. CI runs both on every pull request and weekly, so new IntelliJ releases are checked even when nothing changes here.
+
 #### GitHub Integration
 
 The project is configured to run detekt analysis and Spotless checks on GitHub via GitHub Actions:
