@@ -25,7 +25,7 @@ This will:
 
 #### Code Coverage with Kover
 
-This project uses Kover to measure code coverage of Kotlin code. The minimum required coverage is set to 10%.
+This project uses Kover to measure code coverage of Kotlin code. The minimum required coverage is set to 30%.
 
 To run tests with coverage and generate reports:
 
