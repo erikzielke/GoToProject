@@ -14,7 +14,7 @@ plugins {
     id("com.github.gradle-git-version-calculator") version "1.1.0"
     id("org.jetbrains.kotlin.jvm") version "2.4.20"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
-    id("org.jetbrains.kotlinx.kover") version "0.9.9"
+    id("org.jetbrains.kotlinx.kover") version "0.9.11"
     id("com.diffplug.spotless") version "8.10.2"
 }
 
