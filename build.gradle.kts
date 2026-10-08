@@ -3,31 +3,44 @@ import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-buildscript {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath("gradle.plugin.com.github.gradle-git-version-calculator:gradle-git-version-calculator:1.1.0")
-    }
-}
 plugins {
     id("org.jetbrains.intellij.platform") version "2.19.0"
-    id("com.github.gradle-git-version-calculator") version "1.1.0"
     id("org.jetbrains.kotlin.jvm") version "2.4.20"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
     id("org.jetbrains.kotlinx.kover") version "0.9.11"
     id("com.diffplug.spotless") version "8.10.3"
 }
 
-gitVersionCalculator {
-    prefix = "v"
+// Runs git through the provider API, so no external process starts at configuration time.
+// Returns null if git fails, for example when there is no matching tag.
+fun gitOutput(vararg args: String): String? {
+    val exec =
+        providers.exec {
+            commandLine("git", *args)
+            isIgnoreExitValue = true
+        }
+    return exec.standardOutput.asText
+        .get()
+        .trim()
+        .takeIf { exec.result.get().exitValue == 0 }
+}
+
+// Version from the latest v* tag: "1.6.0", plus "+<commits since tag>" and ".dev" for uncommitted changes,
+// e.g. "1.6.0+87.dev". Falls back to 0.0.1-SNAPSHOT without a tag.
+fun calculateGitVersion(): String {
+    val tag = gitOutput("describe", "--tags", "--abbrev=0", "--match=v*") ?: return "0.0.1-SNAPSHOT"
+    val metadata =
+        listOfNotNull(
+            gitOutput("rev-list", "--count", "$tag..")?.takeIf { it != "0" },
+            "dev".takeIf { !gitOutput("status", "--porcelain").isNullOrEmpty() },
+        )
+    val base = tag.removePrefix("v")
+    return if (metadata.isEmpty()) base else "$base+${metadata.joinToString(".")}"
 }
 
 var channel: String = System.getenv("CHANNEL") ?: ""
 group = "org.github.erikzielke.gotoproject"
-version = gitVersionCalculator.calculateVersion()
+version = calculateGitVersion()
 
 repositories {
     mavenCentral()
@@ -77,6 +90,12 @@ tasks {
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
     }
+    test {
+        // The IntelliJ test setup uses a custom system class loader and appends to the boot classpath,
+        // which makes class data sharing print warnings on every run. Disable it for the test JVM.
+        jvmArgs("-Xshare:off")
+        systemProperty("java.util.logging.config.file", file("src/test/resources/logging.properties").absolutePath)
+    }
     patchPluginXml {
         changeNotes.set(
             """
@@ -105,10 +124,10 @@ tasks {
         description = "Run detekt analysis on the whole project"
         parallel = true
         buildUponDefaultConfig = true
-        setSource(files(projectDir))
+        setSource(files("src", "build.gradle.kts", "settings.gradle.kts"))
         config.setFrom(files("$projectDir/config/detekt/detekt.yml"))
         include("**/*.kt", "**/*.kts")
-        exclude("**/build/**", "**/resources/**")
+        exclude("**/resources/**")
         reports {
             sarif.required = true
             sarif.outputLocation.set(file("$projectDir/build/reports/detekt/detekt.sarif"))
