@@ -90,6 +90,11 @@ tasks {
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
     }
+    test {
+        // The IntelliJ test setup uses a custom system class loader and appends to the boot classpath,
+        // which makes class data sharing print warnings on every run. Disable it for the test JVM.
+        jvmArgs("-Xshare:off")
+    }
     patchPluginXml {
         changeNotes.set(
             """
