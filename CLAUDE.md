@@ -14,7 +14,7 @@ Guidance for Claude Code when working in this repository.
 
 - JDK 21 (`.sdkmanrc` pins `21.0.9-jbr`; CI uses Temurin 21). Java and Kotlin both target JVM 21.
 - Gradle wrapper with the IntelliJ Platform Gradle Plugin 2.x (`org.jetbrains.intellij.platform`), building against `intellijIdea("2025.3")`.
-- The version comes from git tags (`gradle-git-version-calculator`, prefix `v`), so builds need git history and tags.
+- The version comes from the latest `v*` git tag (`calculateGitVersion()` in `build.gradle.kts`, e.g. `1.6.0+87.dev`), so builds need git history and tags.
 - Plugins and versions are declared inline in `build.gradle.kts`. There is no version catalog.
 
 ## Commands
