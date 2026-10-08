@@ -94,6 +94,7 @@ tasks {
         // The IntelliJ test setup uses a custom system class loader and appends to the boot classpath,
         // which makes class data sharing print warnings on every run. Disable it for the test JVM.
         jvmArgs("-Xshare:off")
+        systemProperty("java.util.logging.config.file", file("src/test/resources/logging.properties").absolutePath)
     }
     patchPluginXml {
         changeNotes.set(
