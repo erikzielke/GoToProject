@@ -15,7 +15,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "2.4.20"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
     id("org.jetbrains.kotlinx.kover") version "0.9.11"
-    id("com.diffplug.spotless") version "8.10.2"
+    id("com.diffplug.spotless") version "8.10.3"
 }
 
 gitVersionCalculator {
