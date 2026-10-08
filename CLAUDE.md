@@ -59,8 +59,16 @@ All extension points are registered in `src/main/resources/META-INF/plugin.xml`.
 - Actions should be dumb-aware (`DumbAware`, `DumbAwareToggleAction`, or `isDumbAware() = true`) and should return `ActionUpdateThread.BGT` from `getActionUpdateThread()`.
 - Don't add a dependency on the Git4Idea plugin. `plugin.xml` depends only on `com.intellij.modules.platform`.
 - When adding an action, configurable, or extension, register it in `plugin.xml` and add any user-visible text to `messages.properties`.
+- Add user-visible changes to the `[Unreleased]` section of `CHANGELOG.md`.
 - Tests are in `src/test/kotlin/...` and mirror the main package layout. Platform-dependent tests extend `BasePlatformTestCase`. Pure logic uses `kotlin-test` and `mockito-kotlin`.
 
 ## Release
 
-`.github/workflows/publish.yml` is triggered manually with a channel input (default `alpha`). It runs `publishPlugin` using the `PUBLISH_TOKEN`, `PRIVATE_KEY`, `PRIVATE_KEY_PASSWORD`, and `CERTIFICATE_CHAIN` secrets. Change notes are set in `patchPluginXml` in `build.gradle.kts`.
+`.github/workflows/publish.yml` is triggered manually with a channel input (default `alpha`). It runs `publishPlugin` using the `PUBLISH_TOKEN`, `PRIVATE_KEY`, `PRIVATE_KEY_PASSWORD`, and `CERTIFICATE_CHAIN` secrets. The Marketplace change notes come from `CHANGELOG.md` ([Keep a Changelog](https://keepachangelog.com) format, via the `org.jetbrains.changelog` plugin).
+
+To release:
+
+1. `./gradlew patchChangelog -PreleaseVersion=1.7.0` renames `[Unreleased]` to `[1.7.0] - <date>` and adds an empty `[Unreleased]`.
+2. Commit, tag `v1.7.0`, push the tag, then run the publish workflow.
+
+A build exactly at a release tag uses that version's section and fails if it is missing. Other builds use `[Unreleased]`.

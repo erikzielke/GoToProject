@@ -1,3 +1,4 @@
+import org.jetbrains.changelog.Changelog
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel
@@ -9,6 +10,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
     id("org.jetbrains.kotlinx.kover") version "0.9.11"
     id("com.diffplug.spotless") version "8.10.3"
+    id("org.jetbrains.changelog") version "2.5.0"
 }
 
 // Runs git through the provider API, so no external process starts at configuration time.
@@ -41,6 +43,9 @@ fun calculateGitVersion(): String {
 var channel: String = System.getenv("CHANNEL") ?: ""
 group = "org.github.erikzielke.gotoproject"
 version = calculateGitVersion()
+
+// A build exactly at a release tag with no local changes, e.g. "1.6.0" but not "1.6.0+87" or "0.0.1-SNAPSHOT".
+val isReleaseBuild = version.toString().matches(Regex("""\d+\.\d+\.\d+"""))
 
 repositories {
     mavenCentral()
@@ -97,15 +102,13 @@ tasks {
         systemProperty("java.util.logging.config.file", file("src/test/resources/logging.properties").absolutePath)
     }
     patchPluginXml {
-        changeNotes.set(
-            """
-            Thanks to https://github.com/ChrisCarini :
-            <ul>
-                <li>Added option for showing 'Projects' tab in search everywhere and opening it by default when using 'Go to Project' action.</li>
-                <li>Disabling Go to Last Project action if no project available.</li>
-            </ul>
-            """.trimIndent(),
-        )
+        // Release builds use the CHANGELOG.md section for their version and fail if it is missing.
+        // Other builds show the upcoming changes from the Unreleased section.
+        changeNotes =
+            provider {
+                val item = if (isReleaseBuild) changelog.get(version.toString()) else changelog.getUnreleased()
+                changelog.renderItem(item.withHeader(false).withEmptySections(false), Changelog.OutputType.HTML)
+            }
     }
 
     signPlugin {
@@ -134,6 +137,12 @@ tasks {
             html.required = true
         }
     }
+}
+
+changelog {
+    // patchChangelog runs before the release tag exists, so pass the new version: -PreleaseVersion=1.7.0
+    version = providers.gradleProperty("releaseVersion").orElse(project.version.toString())
+    repositoryUrl = "https://github.com/erikzielke/GoToProject"
 }
 
 kover {
