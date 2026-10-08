@@ -6,8 +6,6 @@
 
     <resource-bundle>messages</resource-bundle>
 
-    <idea-version since-build="223.7571.4"/>
-
     <description><![CDATA[
       Enables opening project windows with speed search
       ]]></description>

@@ -46,6 +46,8 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 21
+      - name: Verify plugin compatibility
+        run: ./gradlew verifyPlugin
       - uses: gradle/gradle-build-action@v3
         with:
           arguments: publishPlugin
