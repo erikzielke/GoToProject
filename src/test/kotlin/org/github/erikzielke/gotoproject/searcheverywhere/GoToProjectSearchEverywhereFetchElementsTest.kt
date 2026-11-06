@@ -1,5 +1,8 @@
 package org.github.erikzielke.gotoproject.searcheverywhere
 
+import com.intellij.ide.RecentProjectMetaInfo
+import com.intellij.ide.RecentProjectsManagerBase
+import com.intellij.ide.ReopenProjectAction
 import com.intellij.openapi.progress.EmptyProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -9,6 +12,7 @@ import org.github.erikzielke.gotoproject.GoToProjectWindowSettings
 import org.github.erikzielke.gotoproject.focus.projects
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.nio.file.Files
 
 /**
  * Tests for GoToProjectSearchEverywhereContributor behaviour that depends on the plugin settings
@@ -18,6 +22,7 @@ class GoToProjectSearchEverywhereFetchElementsTest : BasePlatformTestCase() {
     private lateinit var contributor: GoToProjectSearchEverywhereContributor
     private lateinit var originalState: GoToProjectWindowSettings
     private val addedProjects = mutableListOf<Project>()
+    private val addedRecentPaths = mutableListOf<String>()
 
     override fun setUp() {
         super.setUp()
@@ -29,6 +34,7 @@ class GoToProjectSearchEverywhereFetchElementsTest : BasePlatformTestCase() {
     override fun tearDown() {
         try {
             projects.removeAll(addedProjects)
+            addedRecentPaths.forEach { RecentProjectsManagerBase.getInstanceEx().removePath(it) }
             GoToProjectApplicationComponent.instance.loadState(originalState)
         } finally {
             super.tearDown()
@@ -82,6 +88,25 @@ class GoToProjectSearchEverywhereFetchElementsTest : BasePlatformTestCase() {
         assertEquals(1, collected.size)
     }
 
+    fun testFetchElementsStopsAfterRecentProjectWhenConsumerReturnsFalse() {
+        GoToProjectApplicationComponent.instance.state.showTabInSearchEverywhere = true
+        addRecentProject("epsilonrecent")
+        addOpenProject("Epsilon Open")
+
+        val collected = mutableListOf<Any>()
+        contributor.fetchElements(
+            "epsilon",
+            EmptyProgressIndicator(),
+            Processor {
+                collected.add(it)
+                false
+            },
+        )
+
+        assertEquals(1, collected.size)
+        assertTrue(collected.single() is ReopenProjectAction)
+    }
+
     fun testFocusOpenProjectReturnsTrueWhenProjectHasNoFrame() {
         assertTrue(contributor.focusOpeProject(mock()))
     }
@@ -92,6 +117,14 @@ class GoToProjectSearchEverywhereFetchElementsTest : BasePlatformTestCase() {
         projects.add(openProject)
         addedProjects.add(openProject)
         return openProject
+    }
+
+    private fun addRecentProject(prefix: String): String {
+        val dir = Files.createTempDirectory(prefix).also { it.toFile().deleteOnExit() }
+        val path = dir.toString()
+        RecentProjectsManagerBase.getInstanceEx().addRecentPath(path, RecentProjectMetaInfo())
+        addedRecentPaths.add(path)
+        return path
     }
 
     private fun fetch(pattern: String): List<Any> {
