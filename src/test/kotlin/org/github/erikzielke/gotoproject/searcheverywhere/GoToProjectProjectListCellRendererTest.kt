@@ -9,7 +9,12 @@ import com.intellij.ui.ColoredListCellRenderer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.lang.reflect.Method
+import java.nio.file.Files
+import java.nio.file.Path
 import javax.swing.JList
+import kotlin.io.path.createDirectories
+import kotlin.io.path.div
+import kotlin.io.path.writeText
 
 /**
  * Tests for GoToProjectProjectListCellRenderer
@@ -18,10 +23,12 @@ import javax.swing.JList
  * which provides access to the necessary platform services like EditorColorsManager and
  * RecentProjectsManagerBase.
  */
+@Suppress("TooManyFunctions")
 class GoToProjectProjectListCellRendererTest : BasePlatformTestCase() {
     private lateinit var disposable: Disposable
     private lateinit var renderer: GoToProjectProjectListCellRenderer
     private lateinit var customizeMethod: Method
+    private val tempDirs = mutableListOf<Path>()
 
     override fun setUp() {
         super.setUp()
@@ -43,8 +50,12 @@ class GoToProjectProjectListCellRendererTest : BasePlatformTestCase() {
     }
 
     override fun tearDown() {
-        Disposer.dispose(disposable)
-        super.tearDown()
+        try {
+            Disposer.dispose(disposable)
+            tempDirs.forEach { it.toFile().deleteRecursively() }
+        } finally {
+            super.tearDown()
+        }
     }
 
     fun testRendererCanBeCreated() {
@@ -153,4 +164,69 @@ class GoToProjectProjectListCellRendererTest : BasePlatformTestCase() {
 
         assertFalse("Should return false for unknown value types", result)
     }
+
+    fun testRecentProjectInGitRepoShowsBranch() {
+        val projectDir = createTempDir("renderer-git")
+        val gitDir = (projectDir / ".git").createDirectories()
+        (gitDir / "HEAD").writeText("ref: refs/heads/develop\n")
+
+        val text = renderRecentProject("Repo Project", projectDir.toString())
+
+        assertTrue("Expected branch label in '$text'", text.contains("[develop]"))
+        assertFalse("Did not expect worktree marker in '$text'", text.contains("(worktree)"))
+        assertTrue("Expected project location in '$text'", text.contains(projectDir.toString()))
+    }
+
+    fun testRecentProjectInLinkedWorktreeShowsBranchAndWorktreeMarker() {
+        val mainRepo = createTempDir("renderer-main")
+        val worktreeGitDir = (mainRepo / ".git" / "worktrees" / "wt").createDirectories()
+        (worktreeGitDir / "HEAD").writeText("ref: refs/heads/feature\n")
+        val worktreeDir = createTempDir("renderer-worktree")
+        (worktreeDir / ".git").writeText("gitdir: $worktreeGitDir\n")
+
+        val text = renderRecentProject("Worktree Project", worktreeDir.toString())
+
+        assertTrue("Expected branch label in '$text'", text.contains("[feature] (worktree)"))
+    }
+
+    fun testOpenProjectInGitRepoShowsBranch() {
+        val projectDir = createTempDir("renderer-open-git")
+        val gitDir = (projectDir / ".git").createDirectories()
+        (gitDir / "HEAD").writeText("ref: refs/heads/develop\n")
+        val openProject = mock<Project>()
+        whenever(openProject.name).thenReturn("Open Project")
+        whenever(openProject.basePath).thenReturn(projectDir.toString())
+
+        val text = render(openProject)
+
+        assertTrue("Expected branch label in '$text'", text.startsWith("Open Project [develop] "))
+    }
+
+    private fun renderRecentProject(
+        name: String,
+        path: String,
+    ): String {
+        val reopenAction = mock<ReopenProjectAction>()
+        whenever(reopenAction.projectName).thenReturn(name)
+        whenever(reopenAction.projectPath).thenReturn(path)
+        return render(reopenAction)
+    }
+
+    private fun render(value: Any): String {
+        val coloredRenderer =
+            object : ColoredListCellRenderer<Any>() {
+                override fun customizeCellRenderer(
+                    list: JList<out Any>,
+                    value: Any?,
+                    index: Int,
+                    selected: Boolean,
+                    hasFocus: Boolean,
+                ) = Unit
+            }
+        val handled = customizeMethod.invoke(renderer, coloredRenderer, JList<Any>(), value, 0, false, false) as Boolean
+        assertTrue("Renderer should handle $value", handled)
+        return coloredRenderer.getCharSequence(false).toString()
+    }
+
+    private fun createTempDir(prefix: String): Path = Files.createTempDirectory(prefix).also { tempDirs.add(it) }
 }
