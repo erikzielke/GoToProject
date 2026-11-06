@@ -20,6 +20,9 @@
         <action id="GoToLastProject" class="org.github.erikzielke.gotoproject.GoToLastProject">
             <add-to-group group-id="OpenProjectWindows" anchor="last"/>
         </action>
+        <action id="GoToWorktree" class="org.github.erikzielke.gotoproject.GoToWorktree">
+            <add-to-group group-id="OpenProjectWindows" anchor="last"/>
+        </action>
     </actions>
 
     <applicationListeners>
