@@ -36,7 +36,7 @@ jobs:
           distribution: 'temurin'
           java-version: 21
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.4.0
+        uses: gradle/actions/setup-gradle@v6.4.1
 
       - name: Check code formatting
         run: ./gradlew spotlessCheck
@@ -93,7 +93,7 @@ jobs:
           distribution: 'temurin'
           java-version: 21
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.3.0
+        uses: gradle/actions/setup-gradle@v6.4.1
 
       - name: Test
         run: ./gradlew test -PplatformVersion=${{ matrix.platform-version }}
@@ -118,7 +118,7 @@ jobs:
           distribution: 'temurin'
           java-version: 21
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.3.0
+        uses: gradle/actions/setup-gradle@v6.4.1
 
       - name: Run Plugin Verifier
         run: ./gradlew verifyPlugin
