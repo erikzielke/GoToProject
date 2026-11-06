@@ -7,10 +7,7 @@ import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfoRt
 import com.intellij.openapi.wm.WindowManager
-import com.intellij.util.BitUtil.isSet
-import com.intellij.util.BitUtil.set
 import org.github.erikzielke.gotoproject.git.GitBranchResolver
-import java.awt.Frame
 import java.awt.event.KeyEvent
 
 internal class GoToProjectWindowAction(
@@ -34,18 +31,7 @@ internal class GoToProjectWindowAction(
         p1: Boolean,
     ) {
         val projectFrame = WindowManager.getInstance().getFrame(project) ?: return
-        val frameState = projectFrame.extendedState
-        if (SystemInfoRt.isMac && isSet(projectFrame.extendedState, Frame.ICONIFIED) && e.inputEvent is KeyEvent) {
-            // On Mac minimized window should not be restored this way
-            return
-        }
-
-        if (isSet(frameState, Frame.ICONIFIED)) {
-            // restore the frame if it is minimized
-            projectFrame.setExtendedState(set(frameState, Frame.ICONIFIED, false))
-        }
-
-        projectFrame.toFront()
+        ProjectFrames.bringToFront(projectFrame, fromKeyboardOnMac = SystemInfoRt.isMac && e.inputEvent is KeyEvent)
     }
 
     object Util {

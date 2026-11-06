@@ -13,15 +13,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.psi.codeStyle.MinusculeMatcher
 import com.intellij.psi.codeStyle.NameUtil
-import com.intellij.util.BitUtil.isSet
-import com.intellij.util.BitUtil.set
 import com.intellij.util.Processor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.github.erikzielke.gotoproject.GoToProjectApplicationComponent
 import org.github.erikzielke.gotoproject.GoToProjectCoroutineScope
+import org.github.erikzielke.gotoproject.ProjectFrames
 import org.github.erikzielke.gotoproject.focus.projects
-import java.awt.Frame
 import javax.swing.ListCellRenderer
 
 class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> {
@@ -100,13 +98,7 @@ class GoToProjectSearchEverywhereContributor : SearchEverywhereContributor<Any> 
     }
 
     fun focusOpeProject(project: Project): Boolean {
-        val projectFrame = WindowManager.getInstance().getFrame(project) ?: return true
-        val frameState = projectFrame.extendedState
-        if (isSet(frameState, Frame.ICONIFIED)) {
-            // restore the frame if it is minimized
-            projectFrame.setExtendedState(set(frameState, Frame.ICONIFIED, false))
-        }
-        projectFrame.toFront()
+        WindowManager.getInstance().getFrame(project)?.let { ProjectFrames.bringToFront(it) }
         return true
     }
 
