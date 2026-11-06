@@ -51,7 +51,7 @@ class GoToProject : SearchEverywhereBaseAction() {
         actionGroupPopup.showCenteredInCurrentWindow(eventProject)
     }
 
-    private fun addOpenProjects(actionGroup: DefaultActionGroup): Set<String> {
+    internal fun addOpenProjects(actionGroup: DefaultActionGroup): Set<String> {
         val openProjects = ProjectManager.getInstance().openProjects
 
         val findLastActive: Project? = findLastActive(openProjects.toList())
@@ -81,12 +81,12 @@ class GoToProject : SearchEverywhereBaseAction() {
         return projectPaths
     }
 
-    private fun findLastActive(locations: List<Project>): Project? =
+    internal fun findLastActive(locations: List<Project>): Project? =
         locations.find {
             it.presentableUrl == instance.focusedBefore?.presentableUrl
         }
 
-    private fun addRecentProjects(
+    internal fun addRecentProjects(
         openProjects: Set<String>,
         actionGroup: DefaultActionGroup,
     ) {
