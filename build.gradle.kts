@@ -8,7 +8,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "2.4.21"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
     id("org.jetbrains.kotlinx.kover") version "0.9.11"
-    id("com.diffplug.spotless") version "8.10.4"
+    id("com.diffplug.spotless") version "8.11.0"
 }
 
 // Runs git through the provider API, so no external process starts at configuration time.
