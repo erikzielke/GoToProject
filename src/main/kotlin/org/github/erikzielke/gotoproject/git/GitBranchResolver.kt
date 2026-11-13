@@ -61,14 +61,19 @@ object GitBranchResolver {
 
     private fun isWorktree(gitDir: Path): Boolean = gitDir.invariantPathString().contains("/worktrees/")
 
-    private fun findGitDir(start: Path): Path? =
+    internal fun findGitDir(start: Path): Path? = findWorkTreeAndGitDir(start)?.second
+
+    /** Returns the working tree root (the directory holding `.git`) and its resolved git dir. */
+    internal fun findWorkTreeAndGitDir(start: Path): Pair<Path, Path>? =
         generateSequence(start.toAbsolutePath().normalize()) { it.parent }.firstNotNullOfOrNull { dir ->
             val gitPath = dir.resolve(".git")
-            when {
-                Files.isDirectory(gitPath) -> gitPath
-                Files.isRegularFile(gitPath) -> resolveGitFile(gitPath, dir)
-                else -> null
-            }
+            val gitDir =
+                when {
+                    Files.isDirectory(gitPath) -> gitPath
+                    Files.isRegularFile(gitPath) -> resolveGitFile(gitPath, dir)
+                    else -> null
+                }
+            gitDir?.let { dir to it }
         }
 
     private fun resolveGitFile(
@@ -83,7 +88,7 @@ object GitBranchResolver {
         return gitDir.normalize().takeIf { Files.isDirectory(it) }
     }
 
-    private fun parseHead(content: String): String? {
+    internal fun parseHead(content: String): String? {
         if (content.isEmpty()) return null
         return if (content.startsWith(REF_PREFIX)) {
             content.removePrefix(REF_PREFIX).trim().removePrefix(HEADS_PREFIX)
